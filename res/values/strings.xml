@@ -5,10 +5,12 @@
     <string name="hello_world">Hola Mundo</string>
     <string name="menu_settings">Settings</string>
     <string name="tab_one_text">Amigos</string>
+    <string name="tab_one_no_friends_on_list">Invita a tus amigos</string>
     <string name="content_one">Contenido uno</string>
     <string name="tab_two_text">Chats</string>
     <string name="content_two">Contenido dos</string>
     <string name="tab_three_text">Perfil</string>
     <string name="content_three">Contenido tres</string>
+    <string name="image">Thumbnail</string>
 
 </resources>

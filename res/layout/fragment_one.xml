@@ -3,14 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+     
+    <ListView android:id="@id/android:list"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:drawSelectorOnTop="false"/>
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/android:empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/content_one"
-        android:textColor="@color/black"
+        android:text="@string/tab_one_no_friends_on_list"
+        android:textColor="#FF0000"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>
