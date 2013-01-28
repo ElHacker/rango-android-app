@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Rango</string>
+    <string name="hello_world">Hola Mundo</string>
+    <string name="menu_settings">Settings</string>
+    <string name="tab_one_text">Amigos</string>
+    <string name="content_one">Contenido uno</string>
+    <string name="tab_two_text">Chats</string>
+    <string name="content_two">Contenido dos</string>
+    <string name="tab_three_text">Perfil</string>
+    <string name="content_three">Contenido tres</string>
+
+</resources>
