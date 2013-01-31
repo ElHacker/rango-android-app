@@ -2,7 +2,7 @@ package com.sutil.rango;
 
 import java.util.List;
 
-import com.example.holotest.R;
+import com.sutil.rango.R;
 
 import android.app.Activity;
 import android.content.Context;

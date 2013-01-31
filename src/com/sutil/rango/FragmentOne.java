@@ -8,7 +8,7 @@ import org.holoeverywhere.app.ListFragment;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
 
-import com.example.holotest.R;
+import com.sutil.rango.R;
 
 import android.content.Context;
 import android.os.Bundle;
