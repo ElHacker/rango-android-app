@@ -16,5 +16,6 @@
     <string name="welcome">Bienvenido, has iniciado sesión.</string>
     <string name="app_id">138858016269838</string>
     <string name="settings">Configuración</string>
+    <string name="logout_text">Logout</string>
 
 </resources>
