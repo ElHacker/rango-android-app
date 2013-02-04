@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:src="@drawable/red_paven" 
+    android:tileMode="repeat">
+    <!-- TODO: Give credit to http://subtlepatterns.com/paven/ for the background pattern -->
+</bitmap>

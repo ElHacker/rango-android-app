@@ -6,7 +6,7 @@
               android:layout_height="fill_parent"
               android:orientation="vertical"
               android:gravity="center"
-              android:background="#CC0000" >
+              android:background="@drawable/backrepeat" >
 
     <LinearLayout
             android:layout_width="fill_parent"
