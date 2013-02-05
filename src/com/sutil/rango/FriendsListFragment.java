@@ -22,7 +22,7 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
 
-public class FragmentOne extends ListFragment {
+public class FriendsListFragment extends ListFragment {
 	TextView showMessage;
 	Context context;
 	

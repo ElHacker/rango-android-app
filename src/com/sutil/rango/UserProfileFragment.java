@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class FragmentThree extends Fragment {
+public class UserProfileFragment extends Fragment {
 	TextView showMessage;
 	Context context;
 	
