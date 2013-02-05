@@ -1,6 +1,5 @@
 package com.sutil.rango;
 
-
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
