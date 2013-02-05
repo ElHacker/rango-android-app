@@ -3,6 +3,8 @@ package com.sutil.rango;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
@@ -55,14 +57,18 @@ public class TabsActivity extends Activity {
 	    bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 	    bar.setTitle("Rango");
 	    
-	    
-	    
 	    mTabsAdapter = new TabsAdapter(this, mViewPager);
 	    
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_friends_list),FriendsListFragment.class, null);
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_two_text), FragmentTwo.class, null);
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_user_profile), UserProfileFragment.class, null);
-	    
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.action_bar_menu, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
