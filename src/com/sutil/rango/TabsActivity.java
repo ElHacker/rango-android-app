@@ -5,16 +5,23 @@ import org.holoeverywhere.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.facebook.FacebookOperationCanceledException;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.FacebookException;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.sutil.rango.R;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class TabsActivity extends Activity {
 	
@@ -70,6 +77,62 @@ public class TabsActivity extends Activity {
 		inflater.inflate(R.menu.action_bar_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.invite_button:
+			sendRequestDialog();
+			return true;
+		}
+		return false;
+	}
+	
+	private void sendRequestDialog() {
+	    Bundle params = new Bundle();
+	    params.putString("message", "Learn how to make your Android apps social");
+	    final Context context = (Context) this;
+
+	    WebDialog requestsDialog = (
+	        new WebDialog.RequestsDialogBuilder(context,
+	            Session.getActiveSession(),
+	            params))
+	            .setOnCompleteListener(new OnCompleteListener() {
+
+	                @Override
+	                public void onComplete(Bundle values,
+	                    FacebookException error) {
+	                    if (error != null) {
+	                        if (error instanceof FacebookOperationCanceledException) {
+	                            Toast.makeText(context, 
+	                                "Request cancelled", 
+	                                Toast.LENGTH_SHORT).show();
+	                        } else {
+	                            Toast.makeText(context, 
+	                                "Network Error", 
+	                                Toast.LENGTH_SHORT).show();
+	                        }
+	                    } else {
+	                        final String requestId = values.getString("request");
+	                        if (requestId != null) {
+	                            Toast.makeText(context, 
+	                                "Request sent",  
+	                                Toast.LENGTH_SHORT).show();
+	                        } else {
+	                            Toast.makeText(context, 
+	                                "Request cancelled", 
+	                                Toast.LENGTH_SHORT).show();
+	                        }
+	                    }   
+	                }
+
+	            })
+	            .build();
+	    requestsDialog.show();
+	}
+	
+	
 	
 	@Override
 	public void onResume() {
