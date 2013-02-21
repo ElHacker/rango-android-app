@@ -7,6 +7,9 @@ import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.ListFragment;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -26,7 +29,7 @@ public class FriendsListFragment extends ListFragment {
 	TextView showMessage;
 	Context context;
 	
-	private final String TAG = "FragmentOne"; 
+	private final String TAG = "FriendsListFragment"; 
 	
 	private ListView listView;
 	private List<BaseListElement> listElements;
@@ -72,7 +75,8 @@ public class FriendsListFragment extends ListFragment {
 		
 		// Check for an open session
 		Session session = Session.getActiveSession();
-		makeFriendListRequest(session);
+		// get connected user's info
+		makeFacebookMeRequest(session);		
 		
 	    return  view;
 	}
@@ -106,6 +110,54 @@ public class FriendsListFragment extends ListFragment {
 		}
 	}
 	
+	// Make an API call to get user data and define a
+	private void makeFacebookMeRequest(final Session session) { 
+	    // new callback to handle the response.
+	    Request request = Request.newMeRequest(session, 
+	            new Request.GraphUserCallback() {
+	        @Override
+	        public void onCompleted(GraphUser user, Response response) {
+	            // If the response is successful
+	            if (session == Session.getActiveSession()) {
+	                if (user != null) {
+	                    // Get the user's friend list from rango servers
+	                	makeFriendListRequest(user.getId());
+	                }
+	            }
+	            if (response.getError() != null) {
+	                // Handle errors, will do so later.
+	            }
+	        }
+	    });
+	    request.executeAsync();
+	}
+	
+	// Create the friend list pulling the data from Rango server
+	private void makeFriendListRequest(String user_id) { 
+		try {
+			JSONArray json_friends = RestClient.get_user_friends(user_id);
+			for(int i = 0; i < json_friends.length(); i++) {
+				JSONObject friend = json_friends.getJSONObject(i);
+				ProfilePictureView profilePic = new ProfilePictureView(context);
+				profilePic.setCropped(true);
+				profilePic.setProfileId(friend.getString("fb_id"));
+				String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
+				// Create a list element with profile picture, name and description
+				PeopleListElement peopleListElement = new PeopleListElement(
+						profilePic, friend_full_name, "Mi amigo");
+				listElements.add(peopleListElement);
+			}
+			// Set the list view adapter
+			listView.setAdapter(new ActionListAdapter(getActivity(), 
+						android.R.id.list, listElements));
+		} catch (JSONException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+		
+	}
+	
+	// Create the friend list pulling the data from Facebook
 	private void makeFriendListRequest(final Session session) {
 		Request request = Request.newMyFriendsRequest(session, new Request.GraphUserListCallback() {
 			
@@ -119,7 +171,7 @@ public class FriendsListFragment extends ListFragment {
 							profilePic.setCropped(true);
 							profilePic.setProfileId(friend.getId());
 							PeopleListElement peopleListElement = new PeopleListElement(
-									profilePic, friend.getName(), "Mi amigo", 0);
+									profilePic, friend.getName(), "Mi amigo");
 							listElements.add(peopleListElement);
 						}
 						// Set the list view adapter
@@ -134,13 +186,14 @@ public class FriendsListFragment extends ListFragment {
 		request.executeAsync();
 	}
 	
+	// Represents an element of the friends list, supports profile picture
+	// name, and a brief description
 	private class PeopleListElement extends BaseListElement {
 
-	    public PeopleListElement(ProfilePictureView profilePictureView, String name, String description, int requestCode) {
+	    public PeopleListElement(ProfilePictureView profilePictureView, String name, String description) {
 	        super(profilePictureView,
 	              name,
-	              description,
-	              requestCode);
+	              description);
 	    }
 
 	    @Override
@@ -149,6 +202,7 @@ public class FriendsListFragment extends ListFragment {
 	            @Override
 	            public void onClick(View view) {
 	                // Do nothing for now
+	            	Log.d(TAG, "ID: " + getProfilePictureView().getProfileId());
 	            }
 	        };
 	    }

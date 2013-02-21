@@ -74,7 +74,7 @@ public class UserProfileFragment extends Fragment {
 	    Session session = Session.getActiveSession();
 	    if (session != null && session.isOpened()) {
 	        // Get the user's data
-	        makeMeRequest(session);
+	        makeFacebookMeRequest(session);
 	    }
 	    
 	    return  view;
@@ -89,7 +89,7 @@ public class UserProfileFragment extends Fragment {
 	}
 	
 	
-	private void makeMeRequest(final Session session) {
+	private void makeFacebookMeRequest(final Session session) {
 	    // Make an API call to get user data and define a 
 	    // new callback to handle the response.
 	    Request request = Request.newMeRequest(session, 
@@ -117,7 +117,7 @@ public class UserProfileFragment extends Fragment {
 	private void onSessionStateChange(final Session session, SessionState state, Exception exception) {
 	    if (session != null && session.isOpened()) {
 	        // Get the user's data.
-	        makeMeRequest(session);
+	        makeFacebookMeRequest(session);
 	    }
 	}
 	

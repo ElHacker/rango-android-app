@@ -18,13 +18,11 @@ public abstract class BaseListElement {
 	
 	private BaseAdapter adapter;
 
-	public BaseListElement(ProfilePictureView profilePictureView, String text1, String text2,
-			int requestCode) {
+	public BaseListElement(ProfilePictureView profilePictureView, String text1, String text2) {
 		super();
 		this.profilePictureView = profilePictureView;
 		this.text1 = text1;
 		this.text2 = text2;
-		this.requestCode = requestCode;
 	}
 	
 	public void setAdapter(BaseAdapter adapter) {
