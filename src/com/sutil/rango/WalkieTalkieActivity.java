@@ -2,10 +2,12 @@ package com.sutil.rango;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import com.actionbarsherlock.app.ActionBar;
+import com.facebook.widget.ProfilePictureView;
 
-import android.app.Activity;
+import org.holoeverywhere.app.Activity;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -24,7 +26,35 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
+	            WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         setContentView(R.layout.walkietalkie);
+        
+        // Create action bar
+	    ActionBar bar = getSupportActionBar();
+	    bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+	    bar.setTitle("Rango");
+	    
+	    // Get Friend data from bundler 
+	    Bundle bundle = getIntent().getExtras();
+	    String friend_fb_id = bundle.getString("target_id");
+	    String friend_name = bundle.getString("target_name");
+	    String friend_desc = bundle.getString("target_desc");
+	    // And set it to UI
+	    ProfilePictureView friend_pic= (ProfilePictureView) findViewById(R.id.chat_friend_icon);
+	    TextView friend_name_text = (TextView) findViewById(R.id.chat_friend_name);
+        TextView friend_desc_text = (TextView) findViewById(R.id.chat_friend_desc);
+        
+        if (friend_pic != null) {
+        	friend_pic.setProfileId(friend_fb_id);
+        }
+        if (friend_name_text != null) {
+            friend_name_text.setText(friend_name);
+        }
+        if (friend_desc_text != null) {
+            friend_desc_text.setText(friend_desc);
+        }
+	    
         
         ToggleButton pushToTalkButton = (ToggleButton) findViewById(R.id.pushToTalk);
         pushToTalkButton.setOnTouchListener(this);

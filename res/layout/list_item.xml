@@ -5,7 +5,6 @@
               android:layout_gravity="center_horizontal"
               android:orientation="horizontal">
 
-    <!-- android:src="@drawable/action_eating"  -->
     <com.facebook.widget.ProfilePictureView
             android:id="@+id/icon"
             android:layout_width="60dp"

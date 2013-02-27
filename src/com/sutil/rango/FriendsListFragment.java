@@ -209,12 +209,17 @@ public class FriendsListFragment extends ListFragment {
 	            	Log.d(TAG, "ID: " + getProfilePictureView().getProfileId());
 	                // Get the fb_id of the clicked element of list
 	            	String target_id = getProfilePictureView().getProfileId();
+	            	// Get the name and description of the clicked element
+	            	String target_name = getText1();
+	            	String target_desc = getText2();
 	            	// Create an intent to start the walkie talkie activity
 	            	Intent intent = new Intent(context, WalkieTalkieActivity.class);
 	            	// Data to send to activity 
 	            	Bundle bundle = new Bundle();
 	            	bundle.putString("my_id", my_fb_id);	// Set the my_fb_id
 	            	bundle.putString("target_id", target_id);	// Set the target_id
+	            	bundle.putString("target_name", target_name);
+	            	bundle.putString("target_desc", target_desc);
 	            	intent.putExtras(bundle);	// Set the data to the intent
 	            	startActivity(intent);		// Start the walkie talkie activity
 	            }
