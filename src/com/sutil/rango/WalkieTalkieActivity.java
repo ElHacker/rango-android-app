@@ -32,6 +32,8 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         // Start a singleton socket
         try {
 			socket = new Socket("rangoapp.com", 8090);
+			// Establish a valid connection with the server
+			initSocketConnection();
 			audioRecAndUp = new AudioRecordAndUpload(socket);
 			if(audioPlayAndDown == null) {
 				audioPlayAndDown = new AudioPlayAndDownload(socket);
@@ -46,10 +48,21 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
     
+    // Creates a valid tcp socket connection with the server
     public void initSocketConnection() {
     	Bundle bundle = getIntent().getExtras();
     	String my_id = bundle.getString("my_id");
     	String target_id = bundle.getString("target_id");
+    	// The id_msg will be send to the server and must
+    	// have the form: "my_id,target_id\n"
+    	String id_msg = String.format("%s,%s\n", my_id, target_id);
+    	try {
+    		// Send it to server
+			socket.getOutputStream().write(id_msg.getBytes());
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
     }
     
     @Override

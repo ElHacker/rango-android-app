@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,9 @@ public class FriendsListFragment extends ListFragment {
 	
 	private ListView listView;
 	private List<BaseListElement> listElements;
+	
+	// TODO: CHECK IF IS POSSIBLE TO REMOVE FROM GLOBAL
+	private String my_fb_id = "";
 	
 	private UiLifecycleHelper uiHelper;
 	private Session.StatusCallback callback = 
@@ -120,8 +124,9 @@ public class FriendsListFragment extends ListFragment {
 	            // If the response is successful
 	            if (session == Session.getActiveSession()) {
 	                if (user != null) {
+	                	my_fb_id = user.getId();
 	                    // Get the user's friend list from rango servers
-	                	makeFriendListRequest(user.getId());
+	                	makeFriendListRequest(my_fb_id);
 	                }
 	            }
 	            if (response.getError() != null) {
@@ -201,8 +206,17 @@ public class FriendsListFragment extends ListFragment {
 	        return new View.OnClickListener() {
 	            @Override
 	            public void onClick(View view) {
-	                // Do nothing for now
 	            	Log.d(TAG, "ID: " + getProfilePictureView().getProfileId());
+	                // Get the fb_id of the clicked element of list
+	            	String target_id = getProfilePictureView().getProfileId();
+	            	// Create an intent to start the walkie talkie activity
+	            	Intent intent = new Intent(context, WalkieTalkieActivity.class);
+	            	// Data to send to activity 
+	            	Bundle bundle = new Bundle();
+	            	bundle.putString("my_id", my_fb_id);	// Set the my_fb_id
+	            	bundle.putString("target_id", target_id);	// Set the target_id
+	            	intent.putExtras(bundle);	// Set the data to the intent
+	            	startActivity(intent);		// Start the walkie talkie activity
 	            }
 	        };
 	    }

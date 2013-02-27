@@ -22,7 +22,7 @@ public class RestClient {
 	private static final String TAG = "RestClient";
 	
 	// The host url for the API
-	private static String rango_api_host = "http://rango.herokuapp.com/";
+	private static String rango_api_host = "http://rangoapp.com/";
 	// All the API paths
 	// TODO: Might change the API later to ask for the paths available and 
 	// create a dynamic map out of it that will make the changes of the API
