@@ -4,14 +4,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -41,6 +48,8 @@ public class RestClient {
 		rango_api_paths.put("get_user_friends_requests", "users/%s/friends/requests.json");	// Pass the :fb_id of the user
 		rango_api_paths.put("post_user_friends", "users/%s/friends/requests.json");	// Pass the :fb_id of the user
 		rango_api_paths.put("delete_user_friends", "users/%s/friends/%s.json");	// Pass the :fb_id of the user and the :fb_id_friend
+		// User's gcm sub resource
+		rango_api_paths.put("post_users_gcm_ids", "users/%s/gcm_ids.json"); // Pass the :fb_id of the user
 	}
  
     private static String convertStreamToString(InputStream is) {
@@ -96,6 +105,41 @@ public class RestClient {
 		}
 		return json_string;
     }
+    
+    /*
+     * Create a http post request from a url
+     * returns a json formatted string
+     * */
+    public static String http_post_request(String url, String gcm_id) {
+    	DefaultHttpClient http_client = new DefaultHttpClient();
+		HttpPost http_post = new HttpPost(url);
+		String json_string = "";
+		try { 
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			nameValuePairs.add(new BasicNameValuePair("user_gcm_id", gcm_id));
+			http_post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			HttpResponse http_response_post = http_client.execute(http_post);
+			HttpEntity http_entity_post = http_response_post.getEntity();
+			InputStream input_stream_post = http_entity_post.getContent();
+		
+			// Get the json from the input stream
+			json_string = convertStreamToString(input_stream_post);
+		} catch (MalformedURLException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+	        Log.e(TAG, e.getMessage());
+	        e.printStackTrace();
+	    } catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		} 
+		return json_string;
+    }
  
     /* 
      * Get the user's friend list from the server using the REST API
@@ -112,5 +156,14 @@ public class RestClient {
 			e.printStackTrace();
 		}
     	return json_array;
+    }
+    
+    /*
+     * Post the application gcm id to the server using the REST API
+     * */
+    public static void post_user_gcm_id(String user_id, String gcm_id) {
+    	String url = rango_api_host + String.format(rango_api_paths.get("post_users_gcm_ids"), user_id);
+    	String json_string = http_post_request(url, gcm_id);
+    	Log.d(TAG, "GCM ID response: " + json_string);
     }
 }
