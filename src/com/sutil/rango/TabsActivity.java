@@ -7,12 +7,16 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.FacebookException;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.google.android.gcm.GCMRegistrar;
 import com.sutil.rango.R;
 
 import android.content.Context;
@@ -24,10 +28,9 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 public class TabsActivity extends Activity {
-	
+	// GCM service sender id
+	private static final String SENDER_ID = "108747417910";
 	public static final String TAG = "TabsActivity";
-	
-	
 	
 	ViewPager mViewPager;
 	TabsAdapter mTabsAdapter;
@@ -47,6 +50,24 @@ public class TabsActivity extends Activity {
 	    super.onCreate(savedInstanceState);
 	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
 	            WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+	    
+	 // Register the device with the GCM service
+	 		GCMRegistrar.checkDevice(this);
+	 		GCMRegistrar.checkManifest(this);
+	 		final String gcm_reg_id = GCMRegistrar.getRegistrationId(this);
+	 		if (gcm_reg_id.equals("")) {
+	 			Log.v(TAG, "REGISTERING");
+	 			GCMRegistrar.register(this, SENDER_ID);
+	 		} else {
+	 			Log.v(TAG, "Already registered");
+	 			Log.v(TAG, gcm_reg_id);
+	 			// Check for an open session
+	 			Session session = Session.getActiveSession();
+	 			if (session != null && session.isOpened()) {
+	 				// Get the user's data
+	 				makeFacebookMeRequest(session, gcm_reg_id);
+	 			}
+	 		}
 	    
 	    // The UiLifecycleHelper class constructor takes in a Session.StatusCallback listener
 	    // implementation that you can use to respond to session state changes
@@ -180,6 +201,28 @@ public class TabsActivity extends Activity {
 	        Log.i(TAG, "Logged out...");
 	        finish();
 	    }
+	}
+	
+	private void makeFacebookMeRequest(final Session session, final String gcm_reg_id) {
+	    // Make an API call to get user data and define a 
+	    // new callback to handle the response.
+	    Request request = Request.newMeRequest(session, 
+	            new Request.GraphUserCallback() {
+	        @Override
+	        public void onCompleted(GraphUser user, Response response) {
+	            // If the response is successful
+	            if (session == Session.getActiveSession()) {
+	                if (user != null) {
+	                    // Set the id for posting the reg id
+	                	RestClient.post_user_gcm_id(user.getId(), gcm_reg_id);
+	                }
+	            }
+	            if (response.getError() != null) {
+	                // Handle errors, will do so later.
+	            }
+	        }
+	    });
+	    request.executeAsync();
 	}
 	
 }

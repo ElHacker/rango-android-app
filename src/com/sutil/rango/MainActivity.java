@@ -1,8 +1,11 @@
 package com.sutil.rango;
 
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,10 +21,7 @@ public class MainActivity extends FragmentActivity {
 	private static final String TAG = "MainActivity";
 	private static final int SPLASH = 0;
 	private static final int FRAGMENT_COUNT = SPLASH +1;
-	private static Intent tabsScreen = null;
-	// GCM service sender id
-	private static final String SENDER_ID = "108747417910";
-	
+	private static Intent tabsScreen = null;	
 	private boolean isResumed = false;
 
 	private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
@@ -39,18 +39,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// Register the device with the GCM service
-		GCMRegistrar.checkDevice(this);
-		GCMRegistrar.checkManifest(this);
-		final String regId = GCMRegistrar.getRegistrationId(this);
-		if (regId.equals("")) {
-		  GCMRegistrar.register(this, SENDER_ID);
-		} else {
-		  Log.v(TAG, "Already registered");
-		  Log.v(TAG, regId);
-		  RestClient.post_user_gcm_id("712276985", regId);
-		}
 		
 		
 		uiHelper = new UiLifecycleHelper(this, callback);

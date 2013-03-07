@@ -166,4 +166,5 @@ public class RestClient {
     	String json_string = http_post_request(url, gcm_id);
     	Log.d(TAG, "GCM ID response: " + json_string);
     }
+    
 }

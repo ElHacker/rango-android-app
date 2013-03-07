@@ -1,5 +1,10 @@
 package com.sutil.rango;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +15,18 @@ import android.util.Log;
 
 public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentService{
 	
+	private static final String SENDER_ID = "108747417910";
+	
+	public GCMIntentService(String senderId) {
+		super(senderId);
+		Log.d("GCMIntentService", senderId);
+	}
+	
+	public GCMIntentService() {
+		super(SENDER_ID);
+		Log.d("GCMIntentService", SENDER_ID);
+	}
+	
 	private static final String TAG = "GCMIntentService"; 
 	
 	/*
@@ -18,9 +35,8 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 	 * the error (returned by errorId) and trying to fix the problem.
 	 * */
 	@Override
-	protected void onError(Context context, String regId) {
-		// TODO Auto-generated method stub
-		
+	protected void onError(Context context, String gcm_reg_id) {
+		Log.e(TAG, "GCM ERROR: " + gcm_reg_id);		
 	}
 
 	/*
@@ -65,8 +81,13 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 	 * regid to your server so it can use it to send messages to this device.
 	 * */
 	@Override
-	protected void onRegistered(Context context, String regId) {
-		RestClient.post_user_gcm_id("712276985", regId);
+	protected void onRegistered(Context context, String gcm_reg_id) {
+		// Check for an open session
+	    Session session = Session.getActiveSession();
+	    if (session != null && session.isOpened()) {
+	        // Get the user's data
+	        makeFacebookMeRequest(session, gcm_reg_id);
+	    }
 	}
 
 	/*
@@ -74,9 +95,32 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 	 * Typically, you should send the regid to the server so it unregisters the device.
 	 */
 	@Override
-	protected void onUnregistered(Context context, String regId) {
+	protected void onUnregistered(Context context, String gcm_reg_id) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	// TODO: save the user information per session on SQLite, so I don't have to call this method over and over
+	private void makeFacebookMeRequest(final Session session, final String gcm_reg_id) {
+	    // Make an API call to get user data and define a 
+	    // new callback to handle the response.
+	    Request request = Request.newMeRequest(session, 
+	            new Request.GraphUserCallback() {
+	        @Override
+	        public void onCompleted(GraphUser user, Response response) {
+	            // If the response is successful
+	            if (session == Session.getActiveSession()) {
+	                if (user != null) {
+	                    // Set the id for posting the reg id
+	                	RestClient.post_user_gcm_id(user.getId(), gcm_reg_id);
+	                }
+	            }
+	            if (response.getError() != null) {
+	                // Handle errors, will do so later.
+	            }
+	        }
+	    });
+	    request.executeAsync();
+	}
+	
 }
