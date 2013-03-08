@@ -3,12 +3,13 @@
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:layout_gravity="center_horizontal"
-              android:orientation="horizontal">
+              android:orientation="horizontal"
+              android:layout_alignParentLeft="true">
 
     <com.facebook.widget.ProfilePictureView
             android:id="@+id/icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:contentDescription="@string/image" />
     <LinearLayout
             android:orientation="vertical"
@@ -22,13 +23,13 @@
                 android:textColor="#333"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp" />
+                android:textSize="20sp" />
         <TextView
                 android:id="@+id/text2"
                 android:text="@string/test"
                 android:textColor="#6699CC"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
     </LinearLayout>
 </LinearLayout>

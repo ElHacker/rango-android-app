@@ -3,12 +3,17 @@ package com.sutil.rango;
 import java.io.IOException;
 import java.net.Socket;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.MenuItem;
 import com.facebook.widget.ProfilePictureView;
 
 import org.holoeverywhere.app.Activity;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,8 +24,13 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	public AudioRecordAndUpload audioRecAndUp = null;
 	public AudioPlayAndDownload audioPlayAndDown = null;
 	
-	private final String TAG = "RangoNativeActivity";
+	private ProgressBar callingProgress;
+	private TextView callingText;
+	private ToggleButton pushToTalkButton;
+	
+	private final String TAG = "WalkieTalkieActivity";
 	private Socket socket = null;
+	private boolean isWaiting = false; 
 	
     /** Called when the activity is first created. */
     @Override
@@ -34,6 +44,7 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	    ActionBar bar = getSupportActionBar();
 	    bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 	    bar.setTitle("Rango");
+	    bar.setDisplayHomeAsUpEnabled(true);
 	    
 	    // Get Friend data from bundler 
 	    Bundle bundle = getIntent().getExtras();
@@ -56,7 +67,9 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         }
 	    
         
-        ToggleButton pushToTalkButton = (ToggleButton) findViewById(R.id.pushToTalk);
+        callingProgress = (ProgressBar) findViewById(R.id.callingProgress);
+		callingText = (TextView) findViewById(R.id.callingText);
+        pushToTalkButton = (ToggleButton) findViewById(R.id.pushToTalk);
         pushToTalkButton.setOnTouchListener(this);
         
         // Start a singleton socket
@@ -64,11 +77,9 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 			socket = new Socket("rangoapp.com", 8090);
 			// Establish a valid connection with the server
 			initSocketConnection();
-			audioRecAndUp = new AudioRecordAndUpload(socket);
-			if(audioPlayAndDown == null) {
-				audioPlayAndDown = new AudioPlayAndDownload(socket);
-				audioPlayAndDown.startPlaying();
-			}
+			// Wait for the server to give us permission to start
+			//waitForStart();
+			new WaitForStartTask().execute(socket);
 		} catch (IOException e) {
 	    	Log.d(TAG + "/thread/run", "Socket exception" , e);
 		}
@@ -79,7 +90,7 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
     }
     
     // Creates a valid tcp socket connection with the server
-    public void initSocketConnection() {
+    private void initSocketConnection() {
     	Bundle bundle = getIntent().getExtras();
     	String my_id = bundle.getString("my_id");
     	String target_id = bundle.getString("target_id");
@@ -94,12 +105,10 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 			e.printStackTrace();
 		}
     }
-    
+
     @Override
     public void onStart() {
         super.onStart();
-        // When we get back from the preference setting Activity, assume
-        // settings have changed, and re-login with new auth info.
     }
     
     @Override
@@ -122,5 +131,52 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
             audioRecAndUp.stopRecording();
         }
         return false;
-    }    
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case android.R.id.home:
+	            NavUtils.navigateUpFromSameTask(this);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+    }
+    
+    // Internal class that executes an async task
+    // waits for the start message from server
+    private class WaitForStartTask extends AsyncTask<Socket, Void, Boolean> {
+    	
+		@Override
+		protected Boolean doInBackground(Socket... sockets) {
+			byte data[] = new byte[4096];
+			try {
+				// Read data from socket
+				sockets[0].getInputStream().read(data);
+				String serverMessage = new String(data);
+				if(serverMessage.contains("START\n")) {
+					// START!
+					return true;
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "Socket failed to read", e);
+			}
+			return false;
+		}
+		
+		protected void onPostExecute(Boolean started) {
+			if (started) {
+				Log.d(TAG, "STARTED!");
+				callingProgress.setVisibility(View.INVISIBLE);
+				callingText.setVisibility(View.INVISIBLE);
+				pushToTalkButton.setVisibility(View.VISIBLE);
+				audioRecAndUp = new AudioRecordAndUpload(socket);
+				if(audioPlayAndDown == null) {
+					audioPlayAndDown = new AudioPlayAndDownload(socket);
+					audioPlayAndDown.startPlaying();
+				}
+			}
+		}
+    }
 }

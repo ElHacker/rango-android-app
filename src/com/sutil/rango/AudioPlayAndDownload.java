@@ -61,7 +61,7 @@ public class AudioPlayAndDownload {
 						socket.getInputStream().read(data);
 						audioTrack.write(data, 0, bufferSize);
 					} catch (IOException e) {
-						Log.e(TAG, "Socket failed to write", e);
+						Log.e(TAG, "Socket failed to read", e);
 					}
 			    }
 			}

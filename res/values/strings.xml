@@ -21,5 +21,6 @@
 	<string name="menu_invite_friends">Invitar</string>
 	<string name="invite_friends_message">Habla por radio con tus amigos</string>
 	<string name="holdToTalk">Mantener presionado para hablar</string>
+	<string name="calling">Llamando...</string>
 
 </resources>

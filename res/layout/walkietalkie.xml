@@ -13,8 +13,8 @@
 
 		    <com.facebook.widget.ProfilePictureView
 		            android:id="@+id/chat_friend_icon"
-		            android:layout_width="60dp"
-		            android:layout_height="60dp"
+		            android:layout_width="80dp"
+		            android:layout_height="80dp"
 		            android:contentDescription="@string/image"
 		            android:layout_marginLeft="10dp" />
 		    <LinearLayout
@@ -50,16 +50,35 @@
 	        android:layout_height="fill_parent">
 	
 	        <ToggleButton
-	            android:layout_height="250dp"
-	            android:layout_width="250dp"
-	            android:text="@string/holdToTalk"
 	            android:id="@+id/pushToTalk"
-	
+	            android:layout_width="250dp"
+	            android:layout_height="250dp"
 	            android:layout_centerHorizontal="true"
 	            android:layout_centerVertical="true"
+	            android:layout_marginTop="-20dp"
+	            android:text="@string/holdToTalk"
 	            android:textOff="@string/holdToTalk"
 	            android:textOn="@string/holdToTalk"
-	            android:layout_marginTop="-20dp" />
+	            android:visibility="invisible" />
+
+	        <ProgressBar
+	            android:id="@+id/callingProgress"
+	            style="?android:attr/progressBarStyleLarge"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignTop="@+id/pushToTalk"
+	            android:layout_centerHorizontal="true"
+	            android:layout_marginTop="26dp" />
+
+	        <TextView
+	            android:id="@+id/callingText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@+id/callingProgress"
+	            android:layout_centerHorizontal="true"
+	            android:layout_marginTop="28dp"
+	            android:text="@string/calling"
+	            android:textAppearance="?android:attr/textAppearanceLarge" />
 	
 	    </RelativeLayout>
 	    
