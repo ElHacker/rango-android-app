@@ -21,6 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.util.Log;
  
@@ -145,17 +146,34 @@ public class RestClient {
      * Get the user's friend list from the server using the REST API
      */
     public static JSONArray get_user_friends(String user_id) {
-    	JSONArray json_array = null;
+    	JSONArray friends = null;
     	try {
     		String url = rango_api_host + String.format(rango_api_paths.get("get_user_friends"), user_id);
     		String json_string = http_get_request(url);
 			// Parse the string to JSON array
-			json_array = new JSONArray(json_string);
+			friends = new JSONArray(json_string);
     	} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
-    	return json_array;
+    	return friends;
+    }
+    
+    /* 
+     * Get the a user's info from the server using the REST API
+     */
+    public static JSONObject get_user(String user_id) {
+    	JSONObject user = null;
+    	try {
+    		String url = rango_api_host + String.format(rango_api_paths.get("get_user"), user_id);
+    		String json_string = http_get_request(url);
+			// Parse the string to JSON array
+			user = new JSONObject(json_string);
+    	} catch (JSONException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+    	return user;
     }
     
     /*

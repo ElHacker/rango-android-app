@@ -1,5 +1,6 @@
 package com.sutil.rango;
 
+
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -8,13 +9,13 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import com.google.android.gcm.GCMRegistrar;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -103,7 +104,7 @@ public class MainActivity extends FragmentActivity {
 	        // try to start the TabsScreen activity
 	    	Log.d(TAG, "SESSION OPENED");
 	    	
-	        startActivity(tabsScreen);
+	    	makeFacebookMeRequest(session);
 	    } else {
 	        // otherwise present the splash screen
 	        // and ask the user to login.
@@ -142,7 +143,9 @@ public class MainActivity extends FragmentActivity {
 	            // If the session state is open:
 	            // Show the authenticated fragment
 	        	Log.d(TAG, "SSC SESION OPENED");
-	        	startActivity(tabsScreen);
+	        	// Logged in
+	        	// Get my user information from facebook
+	        	makeFacebookMeRequest(session);
 	        } else if (state.isClosed()) {
 	            // If the session state is closed:
 	            // Show the login fragment
@@ -150,5 +153,34 @@ public class MainActivity extends FragmentActivity {
 	            showFragment(SPLASH, false);
 	        }
 	    }
+	}
+	
+	private void makeFacebookMeRequest(final Session session) {
+	    // Make an API call to get user data and define a 
+	    // new callback to handle the response.
+	    Request request = Request.newMeRequest(session, 
+	            new Request.GraphUserCallback() {
+	        @Override
+	        public void onCompleted(GraphUser user, Response response) {
+	            // If the response is successful
+	            if (session == Session.getActiveSession()) {
+	                if (user != null) {
+	                	Log.d(TAG, "Saving Shared preferences");
+	                	// Save my fb user information in shared preferences
+	                	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+	                	SharedPreferences.Editor editor = settings.edit();
+	                	editor.putString("my_fb_id", user.getId());
+	                	editor.putString("my_fb_name", user.getName());
+	                	editor.commit();
+	                	// Start the tab screen activity
+	                    startActivity(tabsScreen);
+	                }
+	            }
+	            if (response.getError() != null) {
+	                // Handle errors, will do so later.
+	            }
+	        }
+	    });
+	    request.executeAsync();
 	}
 }

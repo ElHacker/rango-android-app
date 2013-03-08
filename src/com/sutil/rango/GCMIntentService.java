@@ -1,15 +1,15 @@
 package com.sutil.rango;
 
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import com.facebook.Session;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -46,33 +46,8 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 	 * */
 	@Override
 	protected void onMessage(Context context, Intent intent) {
-		Bundle bundle = intent.getExtras();
-		Log.d(TAG, bundle.toString());
-		CharSequence title = bundle.getCharSequence("title");
-		CharSequence message = bundle.getCharSequence("message");
-		NotificationManager notificationManager;
-		notificationManager = (NotificationManager) context.getSystemService("notification");
-		Notification notification;
-		int icon = R.drawable.notification;
-		// Text to display in the status bar when the notification is launched
-		String tickerText = "Notification from rango";
-		// The extended status bar orders notification in time order
-		long when = System.currentTimeMillis();
-		
-		notification = new Notification(icon,tickerText,when);
-		
-		Intent notificationIntent = new Intent(context, MainActivity.class);
-		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-				notificationIntent, 0);
-		
-		notification.setLatestEventInfo(context, title, message, pendingIntent);
-		notification.defaults = Notification.DEFAULT_ALL;
-		
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;		// Remove when clicked
-//							| Notification.FLAG_INSISTENT;		// Repeat notification until canceled
-		
-		notificationManager.notify(1010, notification);
+		Log.d(TAG, "NEW MESSAGE RECEIVED");
+		createNotification(context, intent);
 	}
 
 	/*
@@ -85,8 +60,10 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 		// Check for an open session
 	    Session session = Session.getActiveSession();
 	    if (session != null && session.isOpened()) {
-	        // Get the user's data
-	        makeFacebookMeRequest(session, gcm_reg_id);
+	    	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+ 			String my_fb_id = settings.getString("my_fb_id", "");
+ 			// Set the id for posting the reg id
+        	RestClient.post_user_gcm_id(my_fb_id, gcm_reg_id);
 	    }
 	}
 
@@ -96,31 +73,63 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 	 */
 	@Override
 	protected void onUnregistered(Context context, String gcm_reg_id) {
-		// TODO Auto-generated method stub
-		
+		Log.d(TAG, "Unregistered: " + gcm_reg_id);		
 	}
 	
-	// TODO: save the user information per session on SQLite, so I don't have to call this method over and over
-	private void makeFacebookMeRequest(final Session session, final String gcm_reg_id) {
-	    // Make an API call to get user data and define a 
-	    // new callback to handle the response.
-	    Request request = Request.newMeRequest(session, 
-	            new Request.GraphUserCallback() {
-	        @Override
-	        public void onCompleted(GraphUser user, Response response) {
-	            // If the response is successful
-	            if (session == Session.getActiveSession()) {
-	                if (user != null) {
-	                    // Set the id for posting the reg id
-	                	RestClient.post_user_gcm_id(user.getId(), gcm_reg_id);
-	                }
-	            }
-	            if (response.getError() != null) {
-	                // Handle errors, will do so later.
-	            }
-	        }
-	    });
-	    request.executeAsync();
+	private void createNotification(Context context, Intent intent) {
+		Bundle bundle = intent.getExtras();
+		Log.d(TAG, bundle.toString());
+		String title = bundle.getString("title");
+		String source_fb_id = bundle.getString("from_fb_id");
+		// Get user information
+		JSONObject source_user = RestClient.get_user(source_fb_id);
+		Log.d(TAG, source_user.toString());
+		String message;
+		Intent notificationIntent;
+		try {
+			message = "Incomming call from: " + source_user.getString("first_name");
+			notificationIntent = new Intent(context, WalkieTalkieActivity.class);
+			Bundle notificationBundle = new Bundle();
+			SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+ 			String my_fb_id = settings.getString("my_fb_id", "");
+			notificationBundle.putString("my_id", my_fb_id);	// Set the my_fb_id
+			notificationBundle.putString("target_id", source_user.getString("fb_id"));	// Set the target_id from source
+			String source_full_name = source_user.getString("first_name") + " " + source_user.getString("last_name"); 
+			notificationBundle.putString("target_name", source_full_name);
+			// TODO: get description from server
+			notificationBundle.putString("target_desc", "Mi amigo");//source_user.getString("description"));
+			notificationIntent.putExtras(notificationBundle);
+			
+		} catch (JSONException e) {
+			// If exception get the default message
+			message = bundle.getString("message");
+			// default intent
+			notificationIntent = intent;
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+		NotificationManager notificationManager;
+		notificationManager = (NotificationManager) context.getSystemService("notification");
+		Notification notification;
+		int icon = R.drawable.notification;
+		// Text to display in the status bar when the notification is launched
+		String tickerText = "Notification from rango";
+		// The extended status bar orders notification in time order
+		long when = System.currentTimeMillis();
+		
+		notification = new Notification(icon,tickerText,when);
+		
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+				notificationIntent, 0);
+		
+		notification.setLatestEventInfo(context, title, message , pendingIntent);
+		notification.defaults = Notification.DEFAULT_ALL;
+		
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;		// Remove when clicked
+//							| Notification.FLAG_INSISTENT;		// Repeat notification until canceled
+		// TODO: change the notification id to a variable one
+		notificationManager.notify(1010, notification);
 	}
 	
 }

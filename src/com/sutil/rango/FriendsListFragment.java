@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.ListFragment;
+import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
 import org.json.JSONArray;
@@ -18,12 +19,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
 
 public class FriendsListFragment extends ListFragment {
@@ -34,9 +32,6 @@ public class FriendsListFragment extends ListFragment {
 	
 	private ListView listView;
 	private List<BaseListElement> listElements;
-	
-	// TODO: CHECK IF IS POSSIBLE TO REMOVE FROM GLOBAL
-	private String my_fb_id = "";
 	
 	private UiLifecycleHelper uiHelper;
 	private Session.StatusCallback callback = 
@@ -76,11 +71,10 @@ public class FriendsListFragment extends ListFragment {
 		// Add an item for the friend picker
 		// listElements.add(new PeopleListElement(0));
 
-		
-		// Check for an open session
-		Session session = Session.getActiveSession();
-		// get connected user's info
-		makeFacebookMeRequest(session);		
+		// Get my friends list
+		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+		String my_fb_id = settings.getString("my_fb_id", "");
+		makeFriendListRequest(my_fb_id);
 		
 	    return  view;
 	}
@@ -114,29 +108,6 @@ public class FriendsListFragment extends ListFragment {
 		}
 	}
 	
-	// Make an API call to get user data and define a
-	private void makeFacebookMeRequest(final Session session) { 
-	    // new callback to handle the response.
-	    Request request = Request.newMeRequest(session, 
-	            new Request.GraphUserCallback() {
-	        @Override
-	        public void onCompleted(GraphUser user, Response response) {
-	            // If the response is successful
-	            if (session == Session.getActiveSession()) {
-	                if (user != null) {
-	                	my_fb_id = user.getId();
-	                    // Get the user's friend list from rango servers
-	                	makeFriendListRequest(my_fb_id);
-	                }
-	            }
-	            if (response.getError() != null) {
-	                // Handle errors, will do so later.
-	            }
-	        }
-	    });
-	    request.executeAsync();
-	}
-	
 	// Create the friend list pulling the data from Rango server
 	private void makeFriendListRequest(String user_id) { 
 		try {
@@ -160,35 +131,6 @@ public class FriendsListFragment extends ListFragment {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	// Create the friend list pulling the data from Facebook
-	private void makeFriendListRequest(final Session session) {
-		Request request = Request.newMyFriendsRequest(session, new Request.GraphUserListCallback() {
-			
-			@Override
-			public void onCompleted(List<GraphUser> users, Response response) {
-				if (session == Session.getActiveSession()) {
-					if (users != null) {
-						for (int i = 0; i < users.size(); i++) {
-							GraphUser friend = users.get(i);
-							ProfilePictureView profilePic = new ProfilePictureView(context);
-							profilePic.setCropped(true);
-							profilePic.setProfileId(friend.getId());
-							PeopleListElement peopleListElement = new PeopleListElement(
-									profilePic, friend.getName(), "Mi amigo");
-							listElements.add(peopleListElement);
-						}
-						// Set the list view adapter
-						listView.setAdapter(new ActionListAdapter(getActivity(), 
-									android.R.id.list, listElements));
-					}else {
-						Log.e(TAG, "Error retrieving friends");
-					} 
-				}
-			}
-		});
-		request.executeAsync();
 	}
 	
 	// Represents an element of the friends list, supports profile picture
@@ -216,6 +158,8 @@ public class FriendsListFragment extends ListFragment {
 	            	Intent intent = new Intent(context, WalkieTalkieActivity.class);
 	            	// Data to send to activity 
 	            	Bundle bundle = new Bundle();
+	            	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+	     			String my_fb_id = settings.getString("my_fb_id", "");
 	            	bundle.putString("my_id", my_fb_id);	// Set the my_fb_id
 	            	bundle.putString("target_id", target_id);	// Set the target_id
 	            	bundle.putString("target_name", target_name);

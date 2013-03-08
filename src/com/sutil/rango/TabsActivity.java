@@ -1,19 +1,17 @@
 package com.sutil.rango;
 
 import org.holoeverywhere.app.Activity;
+import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.FacebookException;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.google.android.gcm.GCMRegistrar;
@@ -61,12 +59,11 @@ public class TabsActivity extends Activity {
 	 		} else {
 	 			Log.v(TAG, "Already registered");
 	 			Log.v(TAG, gcm_reg_id);
-	 			// Check for an open session
-	 			Session session = Session.getActiveSession();
-	 			if (session != null && session.isOpened()) {
-	 				// Get the user's data
-	 				makeFacebookMeRequest(session, gcm_reg_id);
-	 			}
+	 			SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+	 			String my_fb_id = settings.getString("my_fb_id", "");
+	 			// Set the id for posting the reg id
+            	RestClient.post_user_gcm_id(my_fb_id, gcm_reg_id);
+	 			
 	 		}
 	    
 	    // The UiLifecycleHelper class constructor takes in a Session.StatusCallback listener
@@ -201,28 +198,6 @@ public class TabsActivity extends Activity {
 	        Log.i(TAG, "Logged out...");
 	        finish();
 	    }
-	}
-	
-	private void makeFacebookMeRequest(final Session session, final String gcm_reg_id) {
-	    // Make an API call to get user data and define a 
-	    // new callback to handle the response.
-	    Request request = Request.newMeRequest(session, 
-	            new Request.GraphUserCallback() {
-	        @Override
-	        public void onCompleted(GraphUser user, Response response) {
-	            // If the response is successful
-	            if (session == Session.getActiveSession()) {
-	                if (user != null) {
-	                    // Set the id for posting the reg id
-	                	RestClient.post_user_gcm_id(user.getId(), gcm_reg_id);
-	                }
-	            }
-	            if (response.getError() != null) {
-	                // Handle errors, will do so later.
-	            }
-	        }
-	    });
-	    request.executeAsync();
 	}
 	
 }

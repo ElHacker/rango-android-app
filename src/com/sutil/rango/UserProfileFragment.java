@@ -2,14 +2,12 @@ package com.sutil.rango;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Fragment;
+import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.TextView;
 
-import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.R;
@@ -73,10 +71,9 @@ public class UserProfileFragment extends Fragment {
 	    // Check for an open session
 	    Session session = Session.getActiveSession();
 	    if (session != null && session.isOpened()) {
-	        // Get the user's data
-	        makeFacebookMeRequest(session);
+	    	setProfileInfo();
+	       
 	    }
-	    
 	    return  view;
 	}
 	
@@ -88,36 +85,21 @@ public class UserProfileFragment extends Fragment {
 	    }
 	}
 	
-	
-	private void makeFacebookMeRequest(final Session session) {
-	    // Make an API call to get user data and define a 
-	    // new callback to handle the response.
-	    Request request = Request.newMeRequest(session, 
-	            new Request.GraphUserCallback() {
-	        @Override
-	        public void onCompleted(GraphUser user, Response response) {
-	            // If the response is successful
-	            if (session == Session.getActiveSession()) {
-	                if (user != null) {
-	                    // Set the id for the ProfilePictureView
-	                    // view that in turn displays the profile picture.
-	                    profilePictureView.setProfileId(user.getId());
-	                    // Set the Textview's text to the user's name.
-	                    userNameView.setText(user.getName());
-	                }
-	            }
-	            if (response.getError() != null) {
-	                // Handle errors, will do so later.
-	            }
-	        }
-	    });
-	    request.executeAsync();
+	private void setProfileInfo() {
+		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+		String my_fb_id = settings.getString("my_fb_id", "");
+		String my_fb_name = settings.getString("my_fb_name", "Foo Bar");
+		// Set the id for the ProfilePictureView
+		// view that in turn displays the profile picture.
+		profilePictureView.setProfileId(my_fb_id);
+		// Set the Textview's text to the user's name.
+		userNameView.setText(my_fb_name);
 	}
+	
 	
 	private void onSessionStateChange(final Session session, SessionState state, Exception exception) {
 	    if (session != null && session.isOpened()) {
-	        // Get the user's data.
-	        makeFacebookMeRequest(session);
+	        setProfileInfo();
 	    }
 	}
 	
