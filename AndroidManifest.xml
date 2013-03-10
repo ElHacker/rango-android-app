@@ -41,7 +41,9 @@
             </intent-filter>
         </activity>
         <activity android:name="com.sutil.rango.TabsActivity"></activity>
-        <activity android:name="com.sutil.rango.WalkieTalkieActivity">
+        <activity 
+            android:name="com.sutil.rango.WalkieTalkieActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sutil.rango.TabsActivity"/>
