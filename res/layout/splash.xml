@@ -22,7 +22,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/rango_icon_200" />
+                android:src="@drawable/rango_login_logo" />
         
     </LinearLayout>
 
@@ -46,5 +46,11 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="30dp" />
+
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
 
 </LinearLayout>

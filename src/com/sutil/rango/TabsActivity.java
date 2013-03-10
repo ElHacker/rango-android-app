@@ -81,6 +81,7 @@ public class TabsActivity extends Activity {
 	    bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 	    bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 	    bar.setTitle("Rango");
+	    bar.setIcon(R.drawable.rango_logo);
 	    
 	    mTabsAdapter = new TabsAdapter(this, mViewPager);
 	    

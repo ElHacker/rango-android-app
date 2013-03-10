@@ -45,6 +45,7 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	    bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 	    bar.setTitle("Rango");
 	    bar.setDisplayHomeAsUpEnabled(true);
+	    bar.setIcon(R.drawable.rango_logo);
 	    
 	    // Get Friend data from bundler 
 	    Bundle bundle = getIntent().getExtras();

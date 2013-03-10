@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -103,13 +104,14 @@ public class MainActivity extends FragmentActivity {
 	        // if the session is already open,
 	        // try to start the TabsScreen activity
 	    	Log.d(TAG, "SESSION OPENED");
-	    	
+	    	changeUIWhenLogin();
 	    	makeFacebookMeRequest(session);
 	    } else {
 	        // otherwise present the splash screen
 	        // and ask the user to login.
 	    	Log.d(TAG, "SESSION NOT OPENED");
 	        showFragment(SPLASH, false);
+	        changeUIWhenLogout();
 	    }
 	}
 	
@@ -143,6 +145,7 @@ public class MainActivity extends FragmentActivity {
 	            // If the session state is open:
 	            // Show the authenticated fragment
 	        	Log.d(TAG, "SSC SESION OPENED");
+	        	changeUIWhenLogin();
 	        	// Logged in
 	        	// Get my user information from facebook
 	        	makeFacebookMeRequest(session);
@@ -150,9 +153,20 @@ public class MainActivity extends FragmentActivity {
 	            // If the session state is closed:
 	            // Show the login fragment
 	        	Log.d(TAG, "SSC SESION NOT OPENED");
+	        	changeUIWhenLogout();
 	            showFragment(SPLASH, false);
 	        }
 	    }
+	}
+	
+	private void changeUIWhenLogin() {
+		findViewById(R.id.login_button).setVisibility(View.INVISIBLE);
+    	findViewById(R.id.loginProgressBar).setVisibility(View.VISIBLE);
+	}
+	
+	private void changeUIWhenLogout() {
+		findViewById(R.id.login_button).setVisibility(View.VISIBLE);
+    	findViewById(R.id.loginProgressBar).setVisibility(View.INVISIBLE);
 	}
 	
 	private void makeFacebookMeRequest(final Session session) {
