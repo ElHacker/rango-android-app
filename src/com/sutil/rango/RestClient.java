@@ -47,7 +47,7 @@ public class RestClient {
 		// User's friend sub resource
 		rango_api_paths.put("get_user_friends", "users/%s/friends.json");	// Pass the :fb_id of the user
 		rango_api_paths.put("get_user_friends_requests", "users/%s/friends/requests.json");	// Pass the :fb_id of the user
-		rango_api_paths.put("post_user_friends", "users/%s/friends/requests.json");	// Pass the :fb_id of the user
+		rango_api_paths.put("post_user_friends_requests", "users/%s/friends/requests.json");	// Pass the :fb_id of the user
 		rango_api_paths.put("delete_user_friends", "users/%s/friends/%s.json");	// Pass the :fb_id of the user and the :fb_id_friend
 		// User's gcm sub resource
 		rango_api_paths.put("post_users_gcm_ids", "users/%s/gcm_ids.json"); // Pass the :fb_id of the user
@@ -111,13 +111,12 @@ public class RestClient {
      * Create a http post request from a url
      * returns a json formatted string
      * */
-    public static String http_post_request(String url, String gcm_id) {
+    public static String http_post_request(String url, List<NameValuePair> nameValuePairs) {
     	DefaultHttpClient http_client = new DefaultHttpClient();
 		HttpPost http_post = new HttpPost(url);
 		String json_string = "";
 		try { 
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			nameValuePairs.add(new BasicNameValuePair("user_gcm_id", gcm_id));
+			// Set the values to be sent by the post
 			http_post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			HttpResponse http_response_post = http_client.execute(http_post);
@@ -181,8 +180,34 @@ public class RestClient {
      * */
     public static void post_user_gcm_id(String user_id, String gcm_id) {
     	String url = rango_api_host + String.format(rango_api_paths.get("post_users_gcm_ids"), user_id);
-    	String json_string = http_post_request(url, gcm_id);
+    	// Create the object to post
+    	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		nameValuePairs.add(new BasicNameValuePair("user_gcm_id", gcm_id));
+    	String json_string = http_post_request(url, nameValuePairs);
     	Log.d(TAG, "GCM ID response: " + json_string);
+    }
+    
+    /*
+     * Post friend requests
+     * the server expects a json object to be posted as follows
+     * user = {
+     * 	fb_id = "12345678",
+     * }
+     * */
+    public static void post_friend_request(String user_id, String friend_id) {
+    	String url = rango_api_host + String.format(rango_api_paths.get("post_user_friends_requests"), user_id);
+    	// Create the json object to post
+    	JSONObject friend = new JSONObject();
+    	try {
+			friend.put("fb_id", friend_id);
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			nameValuePairs.add(new BasicNameValuePair("user", friend.toString()));
+			String json_string = http_post_request(url, nameValuePairs);
+			Log.d(TAG, "Friend request response: " + json_string);
+		} catch (JSONException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
     }
     
 }

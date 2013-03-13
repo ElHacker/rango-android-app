@@ -34,6 +34,7 @@ public class TabsActivity extends Activity {
 	TabsAdapter mTabsAdapter;
 	TextView tabCenter;
 	TextView tabText;
+	String my_fb_id;
 	
 	private UiLifecycleHelper uiHelper;
 	private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -49,7 +50,10 @@ public class TabsActivity extends Activity {
 	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
 	            WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 	    
-	 // Register the device with the GCM service
+	    // Get current user's facebook id
+	    SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+		my_fb_id = settings.getString("my_fb_id", "");
+		// Register the device with the GCM service
 	 		GCMRegistrar.checkDevice(this);
 	 		GCMRegistrar.checkManifest(this);
 	 		final String gcm_reg_id = GCMRegistrar.getRegistrationId(this);
@@ -59,8 +63,6 @@ public class TabsActivity extends Activity {
 	 		} else {
 	 			Log.v(TAG, "Already registered");
 	 			Log.v(TAG, gcm_reg_id);
-	 			SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
-	 			String my_fb_id = settings.getString("my_fb_id", "");
 	 			// Set the id for posting the reg id
             	RestClient.post_user_gcm_id(my_fb_id, gcm_reg_id);
 	 			
@@ -108,9 +110,12 @@ public class TabsActivity extends Activity {
 		return false;
 	}
 	
+	/*
+	 * Facebook friend request dialog
+	 * */
 	private void sendRequestDialog() {
 	    Bundle params = new Bundle();
-	    params.putString("message", "Learn how to make your Android apps social");
+	    params.putString("message", "Habla con tus amigos por radio.");
 	    final Context context = (Context) this;
 
 	    WebDialog requestsDialog = (
@@ -135,6 +140,14 @@ public class TabsActivity extends Activity {
 	                    } else {
 	                        final String requestId = values.getString("request");
 	                        if (requestId != null) {
+	                        	// Get invited friends ids 
+	                        	// and make a friend request on rango server too
+	                        	int invited_friends_ids_size = values.keySet().size() - 1;
+	                        	for (int i = 0; i < invited_friends_ids_size; i++) {
+	                        		String friend_id = values.getString("to[" + i + "]");
+	                        		// Rango invite friend
+	                        		RestClient.post_friend_request(my_fb_id, friend_id);
+	                        	}
 	                            Toast.makeText(context, 
 	                                "Request sent",  
 	                                Toast.LENGTH_SHORT).show();
