@@ -2,7 +2,6 @@ package com.sutil.rango;
 
 import com.facebook.widget.ProfilePictureView;
 
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.BaseAdapter;
 
@@ -14,7 +13,6 @@ public abstract class BaseListElement {
 	private ProfilePictureView profilePictureView;
 	private String text1;
 	private String text2;
-	private int requestCode;
 	
 	private BaseAdapter adapter;
 

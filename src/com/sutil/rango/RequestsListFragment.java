@@ -12,23 +12,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.ProfilePictureView;
+import com.sutil.rango.R;
+
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.ProfilePictureView;
-
-public class FriendsListFragment extends ListFragment {
+public class RequestsListFragment extends ListFragment {
 	TextView showMessage;
 	Context context;
 	
-	private final String TAG = "FriendsListFragment"; 
+	private final String TAG = "RequestsListFragment"; 
 	
 	private ListView listView;
 	private List<BaseListElement> listElements;
@@ -61,7 +61,7 @@ public class FriendsListFragment extends ListFragment {
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	        Bundle savedInstanceState) {
-	    View view = inflater.inflate(R.layout.fragment_one, container, false);
+	    View view = inflater.inflate(R.layout.fragment_two, container, false);
 	    
 	    listView = (ListView) view.findViewById(android.R.id.list);
 	    
@@ -74,7 +74,7 @@ public class FriendsListFragment extends ListFragment {
 		// Get my friends list
 		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 		String my_fb_id = settings.getString("my_fb_id", "");
-		makeFriendListRequest(my_fb_id);
+		makeRequestsListRequest(my_fb_id);
 		
 	    return  view;
 	}
@@ -108,10 +108,10 @@ public class FriendsListFragment extends ListFragment {
 		}
 	}
 	
-	// Create the friend list pulling the data from Rango server
-	private void makeFriendListRequest(String user_id) { 
+	// Create the requests list pulling the data from Rango server
+	private void makeRequestsListRequest(String user_id) { 
 		try {
-			JSONArray json_friends = RestClient.get_user_friends(user_id);
+			JSONArray json_friends = RestClient.get_friend_requests(user_id);
 			for(int i = 0; i < json_friends.length(); i++) {
 				JSONObject friend = json_friends.getJSONObject(i);
 				ProfilePictureView profilePic = new ProfilePictureView(context);
@@ -119,13 +119,13 @@ public class FriendsListFragment extends ListFragment {
 				profilePic.setProfileId(friend.getString("fb_id"));
 				String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
 				// Create a list element with profile picture, name and description
-				PeopleListElement peopleListElement = new PeopleListElement(
-						profilePic, friend_full_name, "Mi amigo");
+				RequestsListElement peopleListElement = new RequestsListElement(
+						profilePic, friend_full_name, "Quiere ser tu amigo");
 				listElements.add(peopleListElement);
 			}
 			// Set the list view adapter
-			listView.setAdapter(new ActionListAdapter(getActivity(),
-						android.R.id.list, listElements, R.layout.friends_list_item));
+			listView.setAdapter(new ActionListAdapter(getActivity(), 
+						android.R.id.list, listElements, R.layout.requests_list_item));
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
@@ -135,9 +135,9 @@ public class FriendsListFragment extends ListFragment {
 	
 	// Represents an element of the friends list, supports profile picture
 	// name, and a brief description
-	private class PeopleListElement extends BaseListElement {
+	private class RequestsListElement extends BaseListElement {
 
-	    public PeopleListElement(ProfilePictureView profilePictureView, String name, String description) {
+	    public RequestsListElement(ProfilePictureView profilePictureView, String name, String description) {
 	        super(profilePictureView,
 	              name,
 	              description);
@@ -154,18 +154,10 @@ public class FriendsListFragment extends ListFragment {
 	            	// Get the name and description of the clicked element
 	            	String target_name = getText1();
 	            	String target_desc = getText2();
-	            	// Create an intent to start the walkie talkie activity
-	            	Intent intent = new Intent(context, WalkieTalkieActivity.class);
-	            	// Data to send to activity 
-	            	Bundle bundle = new Bundle();
+	            	// Get the current user's fb_id
 	            	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 	     			String my_fb_id = settings.getString("my_fb_id", "");
-	            	bundle.putString("my_id", my_fb_id);	// Set the my_fb_id
-	            	bundle.putString("target_id", target_id);	// Set the target_id
-	            	bundle.putString("target_name", target_name);
-	            	bundle.putString("target_desc", target_desc);
-	            	intent.putExtras(bundle);	// Set the data to the intent
-	            	startActivity(intent);		// Start the walkie talkie activity
+	            	
 	            }
 	        };
 	    }

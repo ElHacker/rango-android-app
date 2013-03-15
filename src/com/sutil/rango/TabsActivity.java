@@ -88,7 +88,7 @@ public class TabsActivity extends Activity {
 	    mTabsAdapter = new TabsAdapter(this, mViewPager);
 	    
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_friends_list),FriendsListFragment.class, null);
-	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_two_text), FragmentTwo.class, null);
+	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_two_text), RequestsListFragment.class, null);
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_user_profile), UserProfileFragment.class, null);
 	}
 	

@@ -176,6 +176,24 @@ public class RestClient {
     }
     
     /*
+     * Gets a user's friend requests from the server using the REST API
+     * user_id : the facebook id of the user to get the friend requests  
+     */
+    public static JSONArray get_friend_requests(String user_id) {
+    	JSONArray friend_requests = null;
+    	try {
+    		String url = rango_api_host + String.format(rango_api_paths.get("get_user_friends_requests"), user_id);
+    		String json_string = http_get_request(url);
+			// Parse the string to JSON array
+			friend_requests = new JSONArray(json_string);
+    	} catch (JSONException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+    	return friend_requests;
+    }
+    
+    /*
      * Post the application gcm id to the server using the REST API
      * */
     public static void post_user_gcm_id(String user_id, String gcm_id) {
