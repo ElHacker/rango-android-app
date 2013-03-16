@@ -15,6 +15,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -140,6 +141,35 @@ public class RestClient {
 		} 
 		return json_string;
     }
+    
+    
+    /*
+     * Create a http delete request from a url
+     * returns a json formatted string
+     */
+    public static String http_delete_request(String url) {
+    	DefaultHttpClient http_client = new DefaultHttpClient();
+		HttpDelete http_delete = new HttpDelete(url);
+		String json_string = "";
+		try { 
+			HttpResponse http_response_get = http_client.execute(http_delete);
+			HttpEntity http_entity_get = http_response_get.getEntity();
+			InputStream input_stream_get = http_entity_get.getContent();
+		
+			// Get the json from the input stream
+			json_string = convertStreamToString(input_stream_get);
+		} catch (MalformedURLException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+		return json_string;
+    }
  
     /* 
      * Get the user's friend list from the server using the REST API
@@ -226,6 +256,15 @@ public class RestClient {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
+    }
+    
+    /*
+     * Delete friends 
+     */
+    public static void delete_user_friend(String user_id, String friend_id) {
+    	String url = rango_api_host + String.format(rango_api_paths.get("delete_user_friends"), user_id, friend_id);
+    	String json_string = http_delete_request(url);
+    	Log.d(TAG, "Delete Friend response: " + json_string);
     }
     
 }

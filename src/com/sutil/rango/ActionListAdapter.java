@@ -2,6 +2,7 @@ package com.sutil.rango;
 
 import java.util.List;
 
+import org.holoeverywhere.widget.Button;
 import org.holoeverywhere.widget.Spinner;
 
 import com.facebook.widget.ProfilePictureView;
@@ -9,9 +10,13 @@ import com.sutil.rango.R;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.view.ViewManager;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -21,8 +26,10 @@ import android.widget.TextView;
 
 public class ActionListAdapter extends ArrayAdapter<BaseListElement>{
 	
+	protected static final String TAG = "ArrayAdapter";
 	private List<BaseListElement> listElements;
 	private int layoutId;
+	private String my_fb_id;
 	
 	public ActionListAdapter(Context context, int resourceId,
 			List<BaseListElement> listElements, int layoutId) {
@@ -34,6 +41,9 @@ public class ActionListAdapter extends ArrayAdapter<BaseListElement>{
 		for (int i = 0; i < listElements.size(); i++) {
 			listElements.get(i).setAdapter(this);
 		}
+		// Get the facebook id of the current uer
+		SharedPreferences settings = context.getSharedPreferences("MyUserInfo", 0);
+		my_fb_id = settings.getString("my_fb_id", "");
 	}
 	
 	@Override
@@ -51,7 +61,8 @@ public class ActionListAdapter extends ArrayAdapter<BaseListElement>{
             ProfilePictureView profilePic = (ProfilePictureView) view.findViewById(R.id.icon);
             TextView text1 = (TextView) view.findViewById(R.id.text1);
             TextView text2 = (TextView) view.findViewById(R.id.text2);
-            Spinner spinner = (Spinner) view.findViewById(R.id.friend_requests_spin);
+            Button confirm_friend_request = (Button) view.findViewById(R.id.confirm_friend_request);
+            Button decline_friend_request = (Button) view.findViewById(R.id.decline_friend_request);
             if (profilePic != null) {
                 profilePic.setProfileId(listElement.getProfilePictureView().getProfileId());
             }
@@ -61,14 +72,32 @@ public class ActionListAdapter extends ArrayAdapter<BaseListElement>{
             if (text2 != null) {
                 text2.setText(listElement.getText2());
             }
-            if (spinner != null) {
-            	// Create an ArrayAdapter using the string array and a default spinner layout
-            	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), 
-            				R.array.friend_request_options, android.R.layout.simple_spinner_item);
-            	// Specify the layout to use when the list of choices appears
-            	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            	// Apply the adapter to the spinner
-            	spinner.setAdapter(adapter);
+            // TODO: REFACTOR final variables
+            // Get the facebook profile id
+        	final String profile_id = profilePic.getProfileId();
+        	final int position_to_remove = position;
+            if (confirm_friend_request != null) {
+            	confirm_friend_request.setOnClickListener(new OnClickListener() {
+    				@Override
+    				public void onClick(View view) {
+    					RestClient.post_friend_request(my_fb_id, profile_id);
+    					// remove the list element once confirmed
+    					listElements.remove(position_to_remove);
+    					notifyDataSetChanged();			// update the view
+    				}
+    			});
+            }
+            
+            if (decline_friend_request != null) {
+            	decline_friend_request.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						RestClient.delete_user_friend(my_fb_id, profile_id);
+						// remove the list element once declined
+						listElements.remove(position_to_remove);
+    					notifyDataSetChanged();			// update the view
+					}
+            	});
             }
         }
         return view;

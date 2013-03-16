@@ -6,6 +6,7 @@ import java.util.List;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.ListFragment;
 import org.holoeverywhere.preference.SharedPreferences;
+import org.holoeverywhere.widget.Button;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
 import org.json.JSONArray;
@@ -18,10 +19,12 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.R;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 public class RequestsListFragment extends ListFragment {
@@ -126,6 +129,8 @@ public class RequestsListFragment extends ListFragment {
 			// Set the list view adapter
 			listView.setAdapter(new ActionListAdapter(getActivity(), 
 						android.R.id.list, listElements, R.layout.requests_list_item));
+			// Set an empty view to the list view
+			listView.setEmptyView(((Activity) context).findViewById(android.R.id.empty));
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
@@ -149,15 +154,6 @@ public class RequestsListFragment extends ListFragment {
 	            @Override
 	            public void onClick(View view) {
 	            	Log.d(TAG, "ID: " + getProfilePictureView().getProfileId());
-	                // Get the fb_id of the clicked element of list
-	            	String target_id = getProfilePictureView().getProfileId();
-	            	// Get the name and description of the clicked element
-	            	String target_name = getText1();
-	            	String target_desc = getText2();
-	            	// Get the current user's fb_id
-	            	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
-	     			String my_fb_id = settings.getString("my_fb_id", "");
-	            	
 	            }
 	        };
 	    }

@@ -7,7 +7,7 @@
     <string name="menu_settings">Settings</string>
     <string name="tab_friends_list">Amigos</string>
     <string name="no_friends_on_list">Invita a tus amigos</string>
-    <string name="tab_two_text">Avisos</string>
+    <string name="tab_two_text">Solicitudes</string>
     <string name="content_two">Contenido dos</string>
     <string name="tab_user_profile">Perfil</string>
     <string name="image">Thumbnail</string>
@@ -21,11 +21,9 @@
 	<string name="menu_invite_friends">Invitar</string>
 	<string name="invite_friends_message">Habla por radio con tus amigos</string>
 	<string name="holdToTalk">Mantener presionado para hablar</string>
-	<string name="calling">Llamando...</string>
+	<string name="calling">Llamando&#8230;</string>
+	<string name="confirm_friend_request">Confirmar</string>
+	<string name="decline_friend_request">Ahora no</string>
+	<string name="no_friend_requests">No tienes solicitudes de amistad</string>
 	
-	<string-array name="friend_request_options">
-	    <item>Acceptar</item>
-	    <item>Rechazar</item>
-	</string-array>
-
 </resources>

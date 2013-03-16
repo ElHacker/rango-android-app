@@ -3,11 +3,22 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-     
+    	
     	<ListView
     	    android:id="@+id/android:list"
     	    android:layout_width="fill_parent"
     	    android:layout_height="fill_parent"
-    	    android:background="@drawable/button_border" />
+    	    android:background="@drawable/button_border"
+    	    android:paddingTop="1dp"/>
+    	
+    	<TextView
+    	    android:id="@android:id/empty"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center"
+    	    android:background="@drawable/button_border"
+    	    android:gravity="center"
+    	    android:text="@string/no_friend_requests"
+    	    android:textSize="20sp" />
     
 </LinearLayout>
