@@ -79,57 +79,44 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 	private void createNotification(Context context, Intent intent) {
 		Bundle bundle = intent.getExtras();
 		Log.d(TAG, bundle.toString());
-		String title = bundle.getString("title");
 		String source_fb_id = bundle.getString("from_fb_id");
 		// Get user information
 		JSONObject source_user = RestClient.get_user(source_fb_id);
 		Log.d(TAG, source_user.toString());
-		String message;
+		String message = bundle.getString("message");
 		Intent notificationIntent;
+		String action = bundle.getString("action");
 		try {
-			message = "Incomming call from: " + source_user.getString("first_name");
-			notificationIntent = new Intent(context, WalkieTalkieActivity.class);
-			Bundle notificationBundle = new Bundle();
-			SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
- 			String my_fb_id = settings.getString("my_fb_id", "");
-			notificationBundle.putString("my_id", my_fb_id);	// Set the my_fb_id
-			notificationBundle.putString("target_id", source_user.getString("fb_id"));	// Set the target_id from source
-			String source_full_name = source_user.getString("first_name") + " " + source_user.getString("last_name"); 
-			notificationBundle.putString("target_name", source_full_name);
-			// TODO: get description from server
-			notificationBundle.putString("target_desc", "Mi amigo");//source_user.getString("description"));
-			notificationIntent.putExtras(notificationBundle);
+			if(action.equals("call")) {
+				notificationIntent = new Intent(context, WalkieTalkieActivity.class);
+				Bundle notificationBundle = new Bundle();
+				SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+	 			String my_fb_id = settings.getString("my_fb_id", "");
+				notificationBundle.putString("my_id", my_fb_id);	// Set the my_fb_id
+				notificationBundle.putString("target_id", source_user.getString("fb_id"));	// Set the target_id from source
+				String source_full_name = source_user.getString("first_name") + " " + source_user.getString("last_name"); 
+				notificationBundle.putString("target_name", source_full_name);
+				// TODO: get description from server
+				notificationBundle.putString("target_desc", "Mi amigo");//source_user.getString("description"));
+				notificationIntent.putExtras(notificationBundle);
+			} else if (action.equals("invite")) {
+				// TODO: change to show the requests list fragment
+				notificationIntent = new Intent(context, MainActivity.class);
+			} else {
+				notificationIntent = new Intent(context, MainActivity.class);
+			}
 			
 		} catch (JSONException e) {
-			// If exception get the default message
-			message = bundle.getString("message");
 			// default intent
 			notificationIntent = intent;
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
-		NotificationManager notificationManager;
-		notificationManager = (NotificationManager) context.getSystemService("notification");
-		Notification notification;
 		int icon = R.drawable.notification;
-		// Text to display in the status bar when the notification is launched
-		String tickerText = "Notification from rango";
-		// The extended status bar orders notification in time order
-		long when = System.currentTimeMillis();
-		
-		notification = new Notification(icon,tickerText,when);
-		
-		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-				notificationIntent, 0);
-		
-		notification.setLatestEventInfo(context, title, message , pendingIntent);
-		notification.defaults = Notification.DEFAULT_ALL;
-		
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;		// Remove when clicked
-//							| Notification.FLAG_INSISTENT;		// Repeat notification until canceled
-		// TODO: change the notification id to a variable one
-		notificationManager.notify(1010, notification);
+		String title = bundle.getString("title");
+		String ticker_text = "Notification from rango";
+		NotificationSetter notification_setter = new NotificationSetter(context);
+		notification_setter.setNotification(notificationIntent, title, ticker_text, message, icon);
 	}
 	
 }
