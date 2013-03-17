@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     	<item android:id="@+id/invite_button"
           android:title="@string/menu_invite_friends"
-          android:icon="@drawable/social_add_group"
+          android:icon="@drawable/6_social_add_person"
           android:showAsAction="always" />
 </menu>
