@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    
+    	<TextView 
+    	    android:id="@+id/requests_list_title"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="wrap_content"
+    	    android:gravity="center_horizontal"
+    	    android:background="@color/white"
+    	    android:text="@string/requests_list_title"
+    	    android:textSize="22sp"
+    	    android:textStyle="bold"
+    	    />
+    
+    	<ImageView
+		    xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:src="@android:drawable/divider_horizontal_textfield"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:scaleType="fitXY"
+		    android:paddingLeft="5dp"
+		    android:paddingRight="5dp"
+		    android:paddingBottom="2dp"
+		    android:paddingTop="2dp" />
+    	
+    	<ListView
+    	    android:id="@+id/android:list"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:background="@color/white"
+    	    android:paddingTop="1dp"/>
+    	
+    	<TextView
+    	    android:id="@android:id/empty"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center"
+    	    android:background="@color/white"
+    	    android:gravity="center"
+    	    android:text="@string/no_friend_requests"
+    	    android:textSize="20sp" />
+    
+</LinearLayout>

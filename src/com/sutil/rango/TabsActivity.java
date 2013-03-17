@@ -88,7 +88,7 @@ public class TabsActivity extends Activity {
 	    mTabsAdapter = new TabsAdapter(this, mViewPager);
 	    
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_friends_list),FriendsListFragment.class, null);
-	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_two_text), RequestsListFragment.class, null);
+	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_two_text), CallsLogFragment.class, null);
 	    mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_user_profile), UserProfileFragment.class, null);
 	}
 	
@@ -103,9 +103,13 @@ public class TabsActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.invite_button:
-			sendRequestDialog();
-			return true;
+			case R.id.invite_button:
+				sendRequestDialog();
+				return true;
+			case R.id.notifications_button:
+				Intent intent = new Intent(this, RequestsListActivity.class);
+				startActivity(intent);
+				return true;
 		}
 		return false;
 	}

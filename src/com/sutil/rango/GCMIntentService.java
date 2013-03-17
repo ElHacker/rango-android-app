@@ -100,8 +100,7 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 				notificationBundle.putString("target_desc", "Mi amigo");//source_user.getString("description"));
 				notificationIntent.putExtras(notificationBundle);
 			} else if (action.equals("invite")) {
-				// TODO: change to show the requests list fragment
-				notificationIntent = new Intent(context, MainActivity.class);
+				notificationIntent = new Intent(context, RequestsListActivity.class);
 			} else {
 				notificationIntent = new Intent(context, MainActivity.class);
 			}
