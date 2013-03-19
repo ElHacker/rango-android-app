@@ -1,12 +1,15 @@
 package com.sutil.rango;
 
 
+import java.util.Arrays;
+
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
+import com.facebook.widget.LoginButton;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -57,6 +60,10 @@ public class MainActivity extends FragmentActivity {
 	        transaction.hide(fragments[i]);
 	    }
 	    transaction.commit();
+	    
+	    // Set the facebook login permissions
+	    LoginButton login_button = (LoginButton) findViewById(R.id.login_button);
+	    login_button.setReadPermissions(Arrays.asList("email"));
 	    
 	    // Starting a new intent for TabsActivity
 	    tabsScreen = new Intent(getApplicationContext(), TabsActivity.class);
@@ -186,6 +193,8 @@ public class MainActivity extends FragmentActivity {
 	                	editor.putString("my_fb_id", user.getId());
 	                	editor.putString("my_fb_name", user.getName());
 	                	editor.commit();
+	                	// post a new user in rango if non existent
+	                	RestClient.post_user(user.getId(), (String) user.asMap().get("email"), user.getFirstName(), user.getLastName());
 	                	// Start the tab screen activity
 	                    startActivity(tabsScreen);
 	                }

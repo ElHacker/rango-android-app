@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UTFDataFormatException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public class RestClient {
 		String json_string = "";
 		try { 
 			// Set the values to be sent by the post
-			http_post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			http_post.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
 			
 			HttpResponse http_response_post = http_client.execute(http_post);
 			HttpEntity http_entity_post = http_response_post.getEntity();
@@ -221,6 +222,28 @@ public class RestClient {
 			e.printStackTrace();
 		}
     	return friend_requests;
+    }
+    
+    /*
+     * Post a new user's information, the database will create a new user if not existent
+     */
+    public static void post_user(String fb_id, String email, String first_name, String last_name){
+    	String url = rango_api_host + rango_api_paths.get("post_users");
+    	JSONObject user = new JSONObject();
+    	try {
+			user.put("fb_id", fb_id);
+			user.put("email", email);
+	    	user.put("first_name", first_name);
+	    	user.put("last_name", last_name);
+	    	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+	    	Log.d(TAG, user.toString());
+	    	nameValuePairs.add(new BasicNameValuePair("user", user.toString()));
+	    	String json_string = http_post_request(url, nameValuePairs);
+	    	Log.d(TAG, "Create new user response: " + json_string);
+		} catch (JSONException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
     }
     
     /*

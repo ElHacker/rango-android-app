@@ -79,7 +79,6 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 			// Establish a valid connection with the server
 			initSocketConnection();
 			// Wait for the server to give us permission to start
-			//waitForStart();
 			new WaitForStartTask().execute(socket);
 		} catch (IOException e) {
 	    	Log.d(TAG + "/thread/run", "Socket exception" , e);
