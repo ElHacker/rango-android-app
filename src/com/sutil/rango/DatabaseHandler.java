@@ -12,6 +12,8 @@ import android.content.ContentValues;
 import android.content.Context;	
 import android.database.Cursor;	
 import android.database.sqlite.SQLiteDatabase;	
+import android.media.MediaCodec.CryptoInfo;
+import android.util.Log;
 
 
 public class DatabaseHandler extends SQLiteOpenHelper{
@@ -45,8 +47,9 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 				+ COL_FIRST_NAME + " TEXT,"
 				+ COL_LAST_NAME + " TEXT,"
 				+ COL_DATE + " LONG,"
-				+ COL_TIME + "LONG"
+				+ COL_TIME + " LONG"
 				+ ")";
+		Log.d("SQL", CREATE_CONTACTS_TABLE);
 		db.execSQL(CREATE_CONTACTS_TABLE);
 	}
 	
@@ -65,10 +68,10 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 		
 		ContentValues values = new ContentValues();
 		// Call fb_id
-		values.put(COL_FB_ID, call.getFb_id());
+		values.put(COL_FB_ID, call.getFbId());
 		// Call Name
-		values.put(COL_FIRST_NAME, call.getFirst_name());
-		values.put(COL_LAST_NAME, call.getLast_name());
+		values.put(COL_FIRST_NAME, call.getFirstName());
+		values.put(COL_LAST_NAME, call.getLastName());
 		// Call Date
 		values.put(COL_DATE, String.valueOf(call.getDate().getTime()));
 		// Call Time
@@ -120,9 +123,9 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 				Call call = new Call();
 				
 				call.setId(Integer.parseInt(cursor.getString(0)));
-				call.setFb_id(cursor.getString(1));
-				call.setFirst_name(cursor.getString(2));
-				call.setLast_name(cursor.getString(3));
+				call.setFbId(cursor.getString(1));
+				call.setFirstName(cursor.getString(2));
+				call.setLastName(cursor.getString(3));
 				call.setDate(new Date(cursor.getLong(4)));
 				call.setTime(new Time(cursor.getLong(5)));
 				
@@ -140,10 +143,10 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 		ContentValues values = new ContentValues();
 		
 		// Call fb_id
-		values.put(COL_FB_ID, call.getFb_id());
+		values.put(COL_FB_ID, call.getFbId());
 		// Call Name
-		values.put(COL_FIRST_NAME, call.getFirst_name());
-		values.put(COL_LAST_NAME, call.getLast_name());
+		values.put(COL_FIRST_NAME, call.getFirstName());
+		values.put(COL_LAST_NAME, call.getLastName());
 		// Call Date
 		values.put(COL_DATE, String.valueOf(call.getDate().getTime()));
 		// Call Time
