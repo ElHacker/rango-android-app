@@ -29,6 +29,7 @@
 	<string name="confirm_friend_request">Confirmar</string>
 	<string name="decline_friend_request">Ahora no</string>
 	<string name="no_friend_requests">No tienes solicitudes de amistad</string>
+	<string name="no_calls_log">No tienes llamadas recientes</string>
 	<string name="requests_list_title">Solicitudes de Amistad</string>
 	
 </resources>

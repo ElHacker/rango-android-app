@@ -116,6 +116,7 @@ public class CallsListFragment extends ListFragment {
 		// Set the list view adapter
 		listView.setAdapter(new ActionListAdapter(getActivity(),
 					android.R.id.list, listElements, R.layout.calls_list_item));
+		listView.refreshDrawableState();
 	}
 	
 	// Represents an element of the callss list, supports profile picture

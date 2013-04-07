@@ -2,6 +2,9 @@ package com.sutil.rango;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.Date;
+import java.sql.Time;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.facebook.widget.ProfilePictureView;
@@ -30,7 +33,6 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	
 	private final String TAG = "WalkieTalkieActivity";
 	private Socket socket = null;
-	private boolean isWaiting = false; 
 	
     /** Called when the activity is first created. */
     @Override
@@ -56,6 +58,23 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	    ProfilePictureView friend_pic= (ProfilePictureView) findViewById(R.id.chat_friend_icon);
 	    TextView friend_name_text = (TextView) findViewById(R.id.chat_friend_name);
         TextView friend_desc_text = (TextView) findViewById(R.id.chat_friend_desc);
+        
+        // Register new call in calls log
+        DatabaseHandler db = new DatabaseHandler(this);
+        String [] full_name = friend_name.split(" ");
+        Call call;
+        // If the full name has a first and last names
+        if (full_name.length == 2) {
+	        call = new Call(friend_fb_id, full_name[0], full_name[1],
+	        		new Date(System.currentTimeMillis()), new Time(System.currentTimeMillis()));
+        } else {
+        	// If the friend only has firstname
+        	call = new Call(friend_fb_id, friend_name, "",
+	        		new Date(System.currentTimeMillis()), new Time(System.currentTimeMillis()));
+        }
+        
+        // Save call to database
+        db.addCall(call);
         
         if (friend_pic != null) {
         	friend_pic.setProfileId(friend_fb_id);

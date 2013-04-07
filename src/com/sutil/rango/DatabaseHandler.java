@@ -1,18 +1,16 @@
 package com.sutil.rango;
 
-import android.database.sqlite.SQLiteOpenHelper;
-
 import java.sql.Date;
 import java.sql.Time;
-import java.util.ArrayList;	
-import java.util.List;	
+import java.util.ArrayList;
+import java.util.List;
 
-
-import android.content.ContentValues;	
-import android.content.Context;	
-import android.database.Cursor;	
-import android.database.sqlite.SQLiteDatabase;	
-import android.media.MediaCodec.CryptoInfo;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
@@ -103,6 +101,8 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 		Call call = new Call(Integer.parseInt(cursor.getString(0)), 
 				cursor.getString(1), cursor.getString(2), cursor.getString(3), 
 				new Date(cursor.getLong(4)), new Time(cursor.getLong(5)));
+		db.close();
+		cursor.close();
 		return call;
 	}
 	
@@ -133,11 +133,13 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 				callList.add(call);
 			} while (cursor.moveToNext());
 		}
+		cursor.close();
+		db.close();
 		return callList;
 	}
 	
 	// Updating single call
-	public int updateCcall(Call call) {
+	public int updateCall(Call call) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		ContentValues values = new ContentValues();
