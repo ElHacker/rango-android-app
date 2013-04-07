@@ -3,28 +3,29 @@ package com.sutil.rango;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.TextView;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.FacebookException;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;
-import com.google.android.gcm.GCMRegistrar;
-import com.sutil.rango.R;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.google.android.gcm.GCMRegistrar;
 
 public class TabsActivity extends Activity {
 	// GCM service sender id
@@ -55,19 +56,7 @@ public class TabsActivity extends Activity {
 	    SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 		my_fb_id = settings.getString("my_fb_id", "");
 		// Register the device with the GCM service
-	 		GCMRegistrar.checkDevice(this);
-	 		GCMRegistrar.checkManifest(this);
-	 		final String gcm_reg_id = GCMRegistrar.getRegistrationId(this);
-	 		if (gcm_reg_id.equals("")) {
-	 			Log.v(TAG, "REGISTERING");
-	 			GCMRegistrar.register(this, SENDER_ID);
-	 		} else {
-	 			Log.v(TAG, "Already registered");
-	 			Log.v(TAG, gcm_reg_id);
-	 			// Set the id for posting the reg id
-            	RestClient.post_user_gcm_id(my_fb_id, gcm_reg_id);
-	 			
-	 		}
+		new RegisterGCMAsyncTask().execute(this);
 	    
 	    // The UiLifecycleHelper class constructor takes in a Session.StatusCallback listener
 	    // implementation that you can use to respond to session state changes
@@ -218,5 +207,31 @@ public class TabsActivity extends Activity {
 	        finish();
 	    }
 	}
+	
+    // Internal class that executes an async task
+    // registers the device with the Google cloud messaging service
+    private class RegisterGCMAsyncTask extends AsyncTask<Context, Void, Boolean> {
+    	
+		@Override
+		protected Boolean doInBackground(Context... contexts) {
+			Context context = contexts[0];
+			// Register the device with the GCM service
+	 		GCMRegistrar.checkDevice(context);
+	 		GCMRegistrar.checkManifest(context);
+	 		final String gcm_reg_id = GCMRegistrar.getRegistrationId(context);
+	 		if (gcm_reg_id.equals("")) {
+	 			Log.v(TAG, "REGISTERING");
+	 			GCMRegistrar.register(context, SENDER_ID);
+	 		} else {
+	 			Log.v(TAG, "Already registered");
+	 			Log.v(TAG, gcm_reg_id);
+	 			// Set the id for posting the reg id
+            	RestClient.post_user_gcm_id(my_fb_id, gcm_reg_id);
+	 		}
+	 		return true;
+		}
+		
+		protected void onPostExecute(Boolean registered) {}
+    }
 	
 }
