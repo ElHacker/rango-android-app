@@ -4,19 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.holoeverywhere.LayoutInflater;
+import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.app.ListActivity;
 import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
+import org.holoeverywhere.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
@@ -32,6 +37,8 @@ public class RequestsListActivity extends ListActivity {
 	
 	private ListView listView;
 	private List<BaseListElement> listElements;
+	ProgressBar loadingProgress;
+	Toast networkErrorToast;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,39 +53,20 @@ public class RequestsListActivity extends ListActivity {
 	    bar.setDisplayHomeAsUpEnabled(true);
 	    
 	    listView = (ListView) findViewById(android.R.id.list);
+	    loadingProgress = (ProgressBar) findViewById(R.id.loadingProgress);
+		networkErrorToast = Toast.makeText(this, "Network Error", Toast.LENGTH_SHORT);
 	    
 		// Set up the list view items, based on a list of
 		// BaseListElement items
 		listElements = new ArrayList<BaseListElement>();
-		// Add an item for the friend picker
-		// listElements.add(new PeopleListElement(0));
-
 		// Get my friends list
 		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 		String my_fb_id = settings.getString("my_fb_id", "");
-		makeRequestsListRequest(my_fb_id);
+
+		new RequestsListRequestAsyncTask(this).execute(my_fb_id);
+
 	}
 
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
-	    View view = inflater.inflate(R.layout.requests_list_activity, container, false);
-	    
-	    listView = (ListView) view.findViewById(android.R.id.list);
-	    
-		// Set up the list view items, based on a list of
-		// BaseListElement items
-		listElements = new ArrayList<BaseListElement>();
-		// Add an item for the friend picker
-		// listElements.add(new PeopleListElement(0));
-
-		// Get my friends list
-		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
-		String my_fb_id = settings.getString("my_fb_id", "");
-		makeRequestsListRequest(my_fb_id);
-		
-	    return  view;
-	}
-	
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -110,29 +98,55 @@ public class RequestsListActivity extends ListActivity {
 	    }
     }
 	
-	// Create the requests list pulling the data from Rango server
-	private void makeRequestsListRequest(String user_id) { 
-		try {
-			JSONArray json_friends = RestClient.get_friend_requests(user_id);
-			for(int i = 0; i < json_friends.length(); i++) {
-				JSONObject friend = json_friends.getJSONObject(i);
-				ProfilePictureView profilePic = new ProfilePictureView(this);
-				profilePic.setCropped(true);
-				profilePic.setProfileId(friend.getString("fb_id"));
-				String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
-				// Create a list element with profile picture, name and description
-				RequestsListElement peopleListElement = new RequestsListElement(
-						profilePic, friend_full_name, "Quiere ser tu amigo");
-				listElements.add(peopleListElement);
+	private class RequestsListRequestAsyncTask extends AsyncTask<String, Void, Boolean> {
+
+		Context context;
+		
+		public RequestsListRequestAsyncTask(Activity activity) {
+			this.context = activity;
+		}
+		
+		@Override
+		protected void onPreExecute() {
+			loadingProgress.setVisibility(View.VISIBLE);
+		}
+		
+		@Override
+		protected Boolean doInBackground(String... params) {
+			String user_id = params[0];
+			try {
+				JSONArray json_friends = RestClient.get_friend_requests(user_id);
+				for(int i = 0; i < json_friends.length(); i++) {
+					JSONObject friend = json_friends.getJSONObject(i);
+					ProfilePictureView profilePic = new ProfilePictureView(context);
+					profilePic.setCropped(true);
+					profilePic.setProfileId(friend.getString("fb_id"));
+					String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
+					// Create a list element with profile picture, name and description
+					RequestsListElement peopleListElement = new RequestsListElement(
+							profilePic, friend_full_name, "Quiere ser tu amigo");
+					listElements.add(peopleListElement);
+				}
+				return true;
+			} catch (Exception e) {
+				Log.e(TAG, "Exception: " + e.getMessage());
+				e.printStackTrace();
+				return false;
 			}
-			// Set the list view adapter
-			listView.setAdapter(new ActionListAdapter(this, 
-						android.R.id.list, listElements, R.layout.requests_list_item));
-			// Set an empty view to the list view
-			listView.setEmptyView(findViewById(android.R.id.empty));
-		} catch (JSONException e) {
-			Log.e(TAG, e.getMessage());
-			e.printStackTrace();
+		}
+		
+		protected void onPostExecute(Boolean hasLoaded) {
+			if(hasLoaded) {
+				loadingProgress.setVisibility(View.GONE);
+				// Set the list view adapter
+				listView.setAdapter(new ActionListAdapter(context, 
+							android.R.id.list, listElements, R.layout.requests_list_item));
+				// Set an empty view to the list view
+				listView.setEmptyView(findViewById(android.R.id.empty));
+			} else {
+				// Network Error
+				networkErrorToast.show();
+			}
 		}
 		
 	}
