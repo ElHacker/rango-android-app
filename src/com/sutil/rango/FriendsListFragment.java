@@ -8,21 +8,26 @@ import org.holoeverywhere.app.ListFragment;
 import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
+import org.holoeverywhere.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.ProfilePictureView;
+import com.google.android.gcm.GCMRegistrar;
 
 public class FriendsListFragment extends ListFragment {
 	TextView showMessage;
@@ -31,6 +36,9 @@ public class FriendsListFragment extends ListFragment {
 	private final String TAG = "FriendsListFragment"; 
 	
 	private ListView listView;
+	private ProgressBar loadingProgress;
+	private Toast networkErrorToast; 
+	
 	private List<BaseListElement> listElements;
 	
 	private UiLifecycleHelper uiHelper;
@@ -64,17 +72,17 @@ public class FriendsListFragment extends ListFragment {
 	    View view = inflater.inflate(R.layout.friends_list_fragment, container, false);
 	    
 	    listView = (ListView) view.findViewById(android.R.id.list);
+	    loadingProgress = (ProgressBar) view.findViewById(R.id.loadingProgress);
+	    networkErrorToast = Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT);
 	    
 		// Set up the list view items, based on a list of
 		// BaseListElement items
 		listElements = new ArrayList<BaseListElement>();
-		// Add an item for the friend picker
-		// listElements.add(new PeopleListElement(0));
-
+		
 		// Get my friends list
 		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 		String my_fb_id = settings.getString("my_fb_id", "");
-		makeFriendListRequest(my_fb_id);
+		new FriendListRequestAsyncTask().execute(my_fb_id);
 		
 	    return  view;
 	}
@@ -108,30 +116,51 @@ public class FriendsListFragment extends ListFragment {
 		}
 	}
 	
-	// Create the friend list pulling the data from Rango server
-	private void makeFriendListRequest(String user_id) { 
-		try {
-			JSONArray json_friends = RestClient.get_user_friends(user_id);
-			for(int i = 0; i < json_friends.length(); i++) {
-				JSONObject friend = json_friends.getJSONObject(i);
-				ProfilePictureView profilePic = new ProfilePictureView(context);
-				profilePic.setCropped(true);
-				profilePic.setProfileId(friend.getString("fb_id"));
-				String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
-				// Create a list element with profile picture, name and description
-				PeopleListElement peopleListElement = new PeopleListElement(
-						profilePic, friend_full_name, "Mi amigo");
-				listElements.add(peopleListElement);
+	// Internal class that executes an async task
+    // registers the device with the Google cloud messaging service
+    private class FriendListRequestAsyncTask extends AsyncTask<String, Void, Boolean> {
+    	
+    	@Override
+    	protected void onPreExecute() {
+    		loadingProgress.setVisibility(View.VISIBLE);
+    	}
+    	
+		@Override
+		protected Boolean doInBackground(String... strings) {
+			String user_id = strings[0];
+			try {
+				JSONArray json_friends = RestClient.get_user_friends(user_id);
+				for(int i = 0; i < json_friends.length(); i++) {
+					JSONObject friend = json_friends.getJSONObject(i);
+					ProfilePictureView profilePic = new ProfilePictureView(context);
+					profilePic.setCropped(true);
+					profilePic.setProfileId(friend.getString("fb_id"));
+					String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
+					// Create a list element with profile picture, name and description
+					PeopleListElement peopleListElement = new PeopleListElement(
+							profilePic, friend_full_name, "Mi amigo");
+					listElements.add(peopleListElement);
+				}
+				return true;
+			} catch (Exception e) {
+				Log.e(TAG, "Exception: " + e.getMessage());
+				e.printStackTrace();
+				return false;
 			}
-			// Set the list view adapter
-			listView.setAdapter(new ActionListAdapter(getActivity(),
-						android.R.id.list, listElements, R.layout.friends_list_item));
-		} catch (JSONException e) {
-			Log.e(TAG, e.getMessage());
-			e.printStackTrace();
 		}
 		
-	}
+		protected void onPostExecute(Boolean hasLoaded) {
+			if (hasLoaded) {
+				loadingProgress.setVisibility(View.GONE);
+				// Set the list view adapter
+				listView.setAdapter(new ActionListAdapter(getActivity(),
+							android.R.id.list, listElements, R.layout.friends_list_item));
+			} else {
+				// Network error
+				networkErrorToast.show();
+			}
+		}
+    }
 	
 	// Represents an element of the friends list, supports profile picture
 	// name, and a brief description

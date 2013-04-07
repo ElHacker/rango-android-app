@@ -112,7 +112,6 @@ public class MainActivity extends FragmentActivity {
 	        // try to start the TabsScreen activity
 	    	Log.d(TAG, "SESSION OPENED");
 	    	changeUIWhenLogin();
-	    	makeFacebookMeRequest(session);
 	    } else {
 	        // otherwise present the splash screen
 	        // and ask the user to login.

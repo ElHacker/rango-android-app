@@ -2,21 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white">
+    
+    	<ProgressBar 
+    	    android:id="@+id/loadingProgress"
+    	    style="?android:attr/progressBarStyleLarge"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center"
+    	    android:visibility="gone" />
      
     	<ListView
     	    android:id="@+id/android:list"
     	    android:layout_width="fill_parent"
     	    android:layout_height="fill_parent"
     	    android:background="@drawable/button_border"
-    	   	android:paddingTop="1dp" />
+    	   	android:paddingTop="1dp"/>
     	
     	<LinearLayout 
     	    android:id="@android:id/empty"
     	    android:layout_width="fill_parent"
     	    android:layout_height="match_parent"
     	    android:orientation="vertical"
-    	    android:background="@color/white"
     	    android:gravity="center">
     	    
     	    <TextView
