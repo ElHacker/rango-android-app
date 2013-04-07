@@ -16,20 +16,20 @@
     <string name="app_id">138858016269838</string>
     <string name="settings">Configuración</string>
     <string name="logout_text">Logout</string>
-    <string name="action_people">With whom?</string>
-	<string name="action_people_default">Select friends</string>
 	
 	<!-- MENU -->
 	<string name="menu_invite_friends">Invitar</string>
 	<string name="menu_notifications">Avisos</string>
 	
-	<string name="invite_friends_message">Habla por radio con tus amigos</string>
+	<string name="fb_invite_friends_message">Habla por radio con tus amigos</string>
+	<string name="invite_friends_btn">Invita amigos</string>
 	<string name="holdToTalk">Mantener presionado para hablar</string>
 	<string name="calling">Llamando&#8230;</string>
 	<string name="confirm_friend_request">Confirmar</string>
 	<string name="decline_friend_request">Ahora no</string>
 	<string name="no_friend_requests">No tienes solicitudes de amistad</string>
 	<string name="no_calls_log">No tienes llamadas recientes</string>
+	<string name="empty_friends_list">Comparte con tus amigos</string>
 	<string name="requests_list_title">Solicitudes de Amistad</string>
 	
 </resources>

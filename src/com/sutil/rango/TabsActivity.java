@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -104,7 +105,7 @@ public class TabsActivity extends Activity {
 		// Handle item selection
 		switch (item.getItemId()) {
 			case R.id.invite_button:
-				sendRequestDialog();
+				sendRequestDialog(findViewById(item.getItemId()));
 				return true;
 			case R.id.notifications_button:
 				Intent intent = new Intent(this, RequestsListActivity.class);
@@ -117,7 +118,7 @@ public class TabsActivity extends Activity {
 	/*
 	 * Facebook friend request dialog
 	 * */
-	private void sendRequestDialog() {
+	public void sendRequestDialog(View view) {
 	    Bundle params = new Bundle();
 	    params.putString("message", "Habla con tus amigos por radio.");
 	    final Context context = (Context) this;
