@@ -92,17 +92,6 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         pushToTalkButton = (ToggleButton) findViewById(R.id.pushToTalk);
         pushToTalkButton.setOnTouchListener(this);
         
-        // Start a singleton socket
-        try {
-			socket = new Socket("rangoapp.com", 8090);
-			// Establish a valid connection with the server
-			initSocketConnection();
-			// Wait for the server to give us permission to start
-			new WaitForStartTask().execute(socket);
-		} catch (IOException e) {
-	    	Log.d(TAG + "/thread/run", "Socket exception" , e);
-		}
-        
         // "Push to talk" can be a serious pain when the screen keeps turning off.
         // Let's prevent that.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -128,12 +117,31 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
     @Override
     public void onStart() {
         super.onStart();
+    	// Wait for the server to give us permission to start
+		new WaitForStartTask().execute();
     }
     
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+    	super.onStop();
+    	// Release system resources
+    	if (audioRecAndUp != null) {
+	    	audioRecAndUp.stopRecording();
+	    	audioRecAndUp = null;
+    	}
+    	if (audioPlayAndDown != null) {
+    		audioPlayAndDown.stopPlaying();
+        	audioPlayAndDown = null;
+    	}
+    	try {
+			socket.close();
+			socket = null;
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
     }
+   
 
     /**
      * Updates whether or not the user's voice is muted, depending on whether the button is pressed.
@@ -165,21 +173,34 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
     
     // Internal class that executes an async task
     // waits for the start message from server
-    private class WaitForStartTask extends AsyncTask<Socket, Void, Boolean> {
+    private class WaitForStartTask extends AsyncTask<Void, Void, Boolean> {
+    	
+    	@Override
+    	protected void onPreExecute() {
+    		// Start a singleton socket
+	        try {
+				socket = new Socket("rangoapp.com", 8090);
+				// Establish a valid connection with the server
+				initSocketConnection();
+			} catch (IOException e) {
+		    	Log.d(TAG + "/thread/run", "Socket exception" , e);
+			}
+    	}
     	
 		@Override
-		protected Boolean doInBackground(Socket... sockets) {
+		protected Boolean doInBackground(Void... voids) {
 			byte data[] = new byte[4096];
 			try {
 				// Read data from socket
-				sockets[0].getInputStream().read(data);
+				socket.getInputStream().read(data);
 				String serverMessage = new String(data);
 				if(serverMessage.contains("START\n")) {
 					// START!
 					return true;
 				}
-			} catch (IOException e) {
-				Log.e(TAG, "Socket failed to read", e);
+			} catch (Exception e) {
+				Log.e(TAG, "" + e.getMessage());
+				e.printStackTrace();
 			}
 			return false;
 		}

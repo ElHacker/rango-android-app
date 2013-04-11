@@ -66,9 +66,11 @@ public class AudioRecordAndUpload {
 	
 	public void stopRecording() {
 	    isRecording = false;
-	    audioRecord.stop();
-	    audioRecord.release();
-	    audioRecord = null;
+	    if (audioRecord != null) {
+		    audioRecord.stop();
+		    audioRecord.release();
+		    audioRecord = null;
+	    }
 	    recordingThread = null;
 	}
 	

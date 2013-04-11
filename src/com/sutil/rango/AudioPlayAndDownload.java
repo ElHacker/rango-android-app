@@ -62,6 +62,9 @@ public class AudioPlayAndDownload {
 						audioTrack.write(data, 0, bufferSize);
 					} catch (IOException e) {
 						Log.e(TAG, "Socket failed to read", e);
+					} catch (Exception e) {
+						Log.e(TAG, "Exception " + e.getMessage());
+						e.printStackTrace();
 					}
 			    }
 			}
@@ -72,9 +75,11 @@ public class AudioPlayAndDownload {
 	
 	public void stopPlaying() {
 	    isPlaying = false;
-	    audioTrack.stop();
-	    audioTrack.release();
-	    audioTrack = null;
+	    if (audioTrack != null) {
+		    audioTrack.stop();
+		    audioTrack.release();
+		    audioTrack = null;
+	    }
 	    playingThread = null;
 	}
 	
