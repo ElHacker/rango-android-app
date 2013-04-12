@@ -32,4 +32,6 @@
 	<string name="empty_friends_list">Comparte con tus amigos</string>
 	<string name="requests_list_title">Solicitudes de Amistad</string>
 	
+	<!-- WalkieTalkie -->
+	<string name="callEnded">Llamada terminada</string>
 </resources>

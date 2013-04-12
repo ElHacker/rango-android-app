@@ -79,6 +79,15 @@
 	            android:layout_marginTop="28dp"
 	            android:text="@string/calling"
 	            android:textAppearance="?android:attr/textAppearanceLarge" />
+	        
+	        <TextView 
+	            android:id="@+id/callEndedText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_centerInParent="true"
+	            android:text="@string/callEnded"
+	            android:textAppearance="?android:attr/textAppearanceLarge"
+	            android:visibility="gone" />
 	
 	    </RelativeLayout>
 	    

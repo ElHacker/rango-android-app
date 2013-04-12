@@ -11,8 +11,10 @@ import com.facebook.widget.ProfilePictureView;
 
 import org.holoeverywhere.app.Activity;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -33,6 +35,9 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	
 	private final String TAG = "WalkieTalkieActivity";
 	private Socket socket = null;
+	// Using the handler class, you can post updates to the user interface from a background thread.
+	private Handler handler = new Handler();
+	private Context context;
 	
     /** Called when the activity is first created. */
     @Override
@@ -41,6 +46,8 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
 	            WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         setContentView(R.layout.walkietalkie);
+        
+        context = this;
         
         // Create action bar
 	    ActionBar bar = getSupportActionBar();
@@ -208,12 +215,12 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 		protected void onPostExecute(Boolean started) {
 			if (started) {
 				Log.d(TAG, "STARTED!");
-				callingProgress.setVisibility(View.INVISIBLE);
-				callingText.setVisibility(View.INVISIBLE);
+				callingProgress.setVisibility(View.GONE);
+				callingText.setVisibility(View.GONE);
 				pushToTalkButton.setVisibility(View.VISIBLE);
 				audioRecAndUp = new AudioRecordAndUpload(socket);
 				if(audioPlayAndDown == null) {
-					audioPlayAndDown = new AudioPlayAndDownload(socket);
+					audioPlayAndDown = new AudioPlayAndDownload(socket, handler, context);
 					audioPlayAndDown.startPlaying();
 				}
 			}
