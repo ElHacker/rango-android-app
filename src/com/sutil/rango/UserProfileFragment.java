@@ -24,7 +24,8 @@ public class UserProfileFragment extends Fragment {
 	
 	private static final String TAG = "FragmentThree";
 	private ProfilePictureView profilePictureView;
-	private TextView userNameView;
+	private TextView userFirstNameText;
+	private TextView userLastNameText;
 	private UiLifecycleHelper uiHelper;
 	private Session.StatusCallback callback = new Session.StatusCallback() {
 	    @Override
@@ -53,14 +54,16 @@ public class UserProfileFragment extends Fragment {
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	        Bundle savedInstanceState) {
-	    View view = inflater.inflate(R.layout.fragment_three, container, false);
+	    View view = inflater.inflate(R.layout.profile_fragment, container, false);
 	    
 	    // Find the user's profile picture custom view
 	    profilePictureView = (ProfilePictureView) view.findViewById(R.id.selection_profile_pic);
 	    profilePictureView.setCropped(true);
 
 	    // Find the user's name view
-	    userNameView = (TextView) view.findViewById(R.id.selection_user_name);
+	    userFirstNameText = (TextView) view.findViewById(R.id.profile_user_first_name);
+	    userLastNameText = (TextView) view.findViewById(R.id.profile_user_last_name);
+	    
 	    
 	    // This allows the LoginButton to be embedded inside a Fragment,
 	    // and will allow the fragment to receive the onActivityResult.onActivityResult()
@@ -88,12 +91,14 @@ public class UserProfileFragment extends Fragment {
 	private void setProfileInfo() {
 		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 		String my_fb_id = settings.getString("my_fb_id", "");
-		String my_fb_name = settings.getString("my_fb_name", "Foo Bar");
+		String my_fb_first_name = settings.getString("my_fb_first_name", "Foo");
+		String my_fb_last_name = settings.getString("my_fb_last_name", "Bar");
 		// Set the id for the ProfilePictureView
 		// view that in turn displays the profile picture.
 		profilePictureView.setProfileId(my_fb_id);
 		// Set the Textview's text to the user's name.
-		userNameView.setText(my_fb_name);
+		userFirstNameText.setText(my_fb_first_name);
+		userLastNameText.setText(my_fb_last_name);
 	}
 	
 	

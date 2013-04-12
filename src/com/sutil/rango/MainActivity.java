@@ -190,7 +190,8 @@ public class MainActivity extends FragmentActivity {
 	                	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 	                	SharedPreferences.Editor editor = settings.edit();
 	                	editor.putString("my_fb_id", user.getId());
-	                	editor.putString("my_fb_name", user.getName());
+	                	editor.putString("my_fb_first_name", user.getFirstName());
+	                	editor.putString("my_fb_last_name", user.getLastName());
 	                	editor.commit();
 	                	// post a new user in rango if non existent
 	                	RestClient.post_user(user.getId(), (String) user.asMap().get("email"), user.getFirstName(), user.getLastName());
