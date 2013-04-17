@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:src="@drawable/red_paven" 
-    android:tileMode="repeat">
-    <!-- TODO: Give credit to http://subtlepatterns.com/paven/ for the background pattern -->
-</bitmap>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial" android:gradientRadius="200"
+                android:startColor="#ff4444"
+                android:endColor="#880000" />  
+
+        </shape>
+    </item>
+    
+    <item>
+		<bitmap 
+		    android:src="@drawable/broken_noise_red" 
+		    android:tileMode="repeat">
+		    <!-- TODO: Give credit to http://subtlepatterns.com/paven/ for the background pattern -->
+		</bitmap>
+	</item>
+</layer-list>
