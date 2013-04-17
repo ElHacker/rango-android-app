@@ -60,11 +60,9 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 	    Bundle bundle = getIntent().getExtras();
 	    String friend_fb_id = bundle.getString("target_id");
 	    String friend_name = bundle.getString("target_name");
-	    String friend_desc = bundle.getString("target_desc");
 	    // And set it to UI
 	    ProfilePictureView friend_pic= (ProfilePictureView) findViewById(R.id.chat_friend_icon);
 	    TextView friend_name_text = (TextView) findViewById(R.id.chat_friend_name);
-        TextView friend_desc_text = (TextView) findViewById(R.id.chat_friend_desc);
         
         // Register new call in calls log
         DatabaseHandler db = new DatabaseHandler(this);
@@ -89,10 +87,6 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         if (friend_name_text != null) {
             friend_name_text.setText(friend_name);
         }
-        if (friend_desc_text != null) {
-            friend_desc_text.setText(friend_desc);
-        }
-	    
         
         callingProgress = (ProgressBar) findViewById(R.id.callingProgress);
 		callingText = (TextView) findViewById(R.id.callingText);
