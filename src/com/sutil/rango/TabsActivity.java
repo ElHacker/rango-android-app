@@ -25,6 +25,8 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 import com.google.android.gcm.GCMRegistrar;
 
 public class TabsActivity extends Activity {
@@ -145,6 +147,9 @@ public class TabsActivity extends Activity {
 	                            Toast.makeText(context, 
 	                                "Request sent",  
 	                                Toast.LENGTH_SHORT).show();
+	                            // Track the 'facebook_invite' event on analytics
+	                            Tracker myTracker = EasyTracker.getTracker();
+	                            myTracker.sendEvent("growth_action", "invite_friends", "facebook_invite", Long.valueOf(invited_friends_ids_size) );
 	                        } else {
 	                            Toast.makeText(context, 
 	                                "Request cancelled", 
@@ -179,6 +184,14 @@ public class TabsActivity extends Activity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    super.onActivityResult(requestCode, resultCode, data);
 	    uiHelper.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		// Set Context before using EasyTracker. Note that the SDK will
+		// use the application context.
+		EasyTracker.getInstance().setContext(this);
 	}
 
 	@Override
