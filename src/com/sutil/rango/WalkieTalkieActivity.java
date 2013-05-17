@@ -8,6 +8,7 @@ import java.sql.Time;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.facebook.widget.ProfilePictureView;
+import com.google.analytics.tracking.android.EasyTracker;
 
 import org.holoeverywhere.app.Activity;
 
@@ -120,6 +121,8 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         super.onStart();
     	// Wait for the server to give us permission to start
 		new WaitForStartTask().execute();
+		// Track analytics start of this activity
+		EasyTracker.getInstance().activityStart(this);
     }
     
     @Override
@@ -141,6 +144,8 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
+    	// Stop the tracking of this activity
+		EasyTracker.getInstance().activityStop(this);
     }
    
 
