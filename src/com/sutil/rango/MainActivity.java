@@ -10,6 +10,8 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +22,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -71,6 +74,14 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	public void onStart() {
+		super.onStart();
+		// ... Rest of the onstart code
+		// Track analytics start of this activity
+		EasyTracker.getInstance().activityStart(this);
+	}
+	
+	@Override
 	public void onResume() {
 	    super.onResume();
 	    uiHelper.onResume();
@@ -82,6 +93,14 @@ public class MainActivity extends FragmentActivity {
 	    super.onPause();
 	    uiHelper.onPause();
 	    isResumed = false;
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		// ... Rest of the onStrop code
+		// Stop the tracking of this activity
+		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	@Override
@@ -111,7 +130,7 @@ public class MainActivity extends FragmentActivity {
 	        // if the session is already open,
 	        // try to start the TabsScreen activity
 	    	Log.d(TAG, "SESSION OPENED");
-	    	changeUIWhenLogin();
+	    	onLogin();
 	    } else {
 	        // otherwise present the splash screen
 	        // and ask the user to login.
@@ -151,7 +170,7 @@ public class MainActivity extends FragmentActivity {
 	            // If the session state is open:
 	            // Show the authenticated fragment
 	        	Log.d(TAG, "SSC SESION OPENED");
-	        	changeUIWhenLogin();
+	        	onLogin();
 	        	// Logged in
 	        	// Get my user information from facebook
 	        	makeFacebookMeRequest(session);
@@ -163,6 +182,14 @@ public class MainActivity extends FragmentActivity {
 	            showFragment(SPLASH, false);
 	        }
 	    }
+	}
+	
+	// Call this method once logged in on facebook
+	private void onLogin() {
+		changeUIWhenLogin();
+		// Track the "login" event
+		Tracker myTracker = EasyTracker.getTracker();
+		myTracker.sendEvent("ui_action", "button_press", "login_button", null);
 	}
 	
 	private void changeUIWhenLogin() {
