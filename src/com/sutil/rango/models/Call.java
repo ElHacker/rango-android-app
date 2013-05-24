@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.models;
 
 import java.sql.Date;
 import java.sql.Time;

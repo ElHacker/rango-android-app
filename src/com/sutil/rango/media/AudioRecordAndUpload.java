@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.media;
 
 import java.io.IOException;
 import java.net.Socket;

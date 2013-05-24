@@ -1,9 +1,13 @@
-package com.sutil.rango;
+package com.sutil.rango.media;
 
 import java.io.IOException;
 import java.net.Socket;
 
 import org.holoeverywhere.app.Activity;
+
+import com.sutil.rango.R;
+import com.sutil.rango.R.color;
+import com.sutil.rango.R.id;
 
 import android.util.Log;
 import android.view.View;

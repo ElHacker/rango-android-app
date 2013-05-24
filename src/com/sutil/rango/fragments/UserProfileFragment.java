@@ -1,9 +1,15 @@
-package com.sutil.rango;
+package com.sutil.rango.fragments;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Fragment;
 import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.TextView;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.Session;
 import com.facebook.SessionState;
@@ -11,12 +17,6 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.LoginButton;
 import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.R;
-
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class UserProfileFragment extends Fragment {
 	TextView showMessage;

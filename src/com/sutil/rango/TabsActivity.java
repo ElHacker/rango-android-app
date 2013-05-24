@@ -28,6 +28,11 @@ import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.android.gcm.GCMRegistrar;
+import com.sutil.rango.adapters.TabsAdapter;
+import com.sutil.rango.fragments.CallsListFragment;
+import com.sutil.rango.fragments.FriendsListFragment;
+import com.sutil.rango.fragments.UserProfileFragment;
+import com.sutil.rango.lib.RestClient;
 
 public class TabsActivity extends Activity {
 	// GCM service sender id

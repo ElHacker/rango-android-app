@@ -1,9 +1,17 @@
-package com.sutil.rango;
+package com.sutil.rango.services;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facebook.Session;
+import com.sutil.rango.MainActivity;
+import com.sutil.rango.R;
+import com.sutil.rango.RequestsListActivity;
+import com.sutil.rango.WalkieTalkieActivity;
+import com.sutil.rango.R.drawable;
+import com.sutil.rango.lib.NotificationSetter;
+import com.sutil.rango.lib.RestClient;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

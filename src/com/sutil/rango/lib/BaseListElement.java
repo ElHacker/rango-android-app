@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.lib;
 
 import com.facebook.widget.ProfilePictureView;
 
@@ -53,6 +53,6 @@ public abstract class BaseListElement {
 		return profilePictureView;
 	}
 	
-	protected abstract View.OnClickListener getOnClickListener();
+	public abstract View.OnClickListener getOnClickListener();
 	
 }

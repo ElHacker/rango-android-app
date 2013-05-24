@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.fragments;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +21,12 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.ProfilePictureView;
+import com.sutil.rango.R;
+import com.sutil.rango.WalkieTalkieActivity;
+import com.sutil.rango.adapters.ActionListAdapter;
+import com.sutil.rango.lib.BaseListElement;
+import com.sutil.rango.lib.DatabaseHandler;
+import com.sutil.rango.models.Call;
 
 public class CallsListFragment extends ListFragment {
 	TextView showMessage;
@@ -130,7 +136,7 @@ public class CallsListFragment extends ListFragment {
 	    }
 
 	    @Override
-	    protected View.OnClickListener getOnClickListener() {
+		public View.OnClickListener getOnClickListener() {
 	        return new View.OnClickListener() {
 	            @Override
 	            public void onClick(View view) {

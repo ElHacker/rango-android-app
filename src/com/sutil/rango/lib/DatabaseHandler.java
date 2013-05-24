@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.lib;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -8,10 +8,11 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.sutil.rango.models.Call;
 
 
 public class DatabaseHandler extends SQLiteOpenHelper{
@@ -61,7 +62,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 	}
 	
 	// Adding new contact
-	void addCall(Call call) {
+	public void addCall(Call call) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 		ContentValues values = new ContentValues();

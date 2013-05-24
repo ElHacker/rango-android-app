@@ -3,7 +3,6 @@ package com.sutil.rango;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.app.ListActivity;
 import org.holoeverywhere.preference.SharedPreferences;
@@ -11,7 +10,6 @@ import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.Toast;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -20,15 +18,14 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.ProfilePictureView;
+import com.sutil.rango.adapters.ActionListAdapter;
+import com.sutil.rango.lib.BaseListElement;
+import com.sutil.rango.lib.RestClient;
 
 public class RequestsListActivity extends ListActivity {
 	TextView showMessage;
@@ -162,7 +159,7 @@ public class RequestsListActivity extends ListActivity {
 	    }
 
 	    @Override
-	    protected View.OnClickListener getOnClickListener() {
+		public View.OnClickListener getOnClickListener() {
 	        return new View.OnClickListener() {
 	            @Override
 	            public void onClick(View view) {

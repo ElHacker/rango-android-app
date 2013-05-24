@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.adapters;
 
 import java.util.ArrayList;
 

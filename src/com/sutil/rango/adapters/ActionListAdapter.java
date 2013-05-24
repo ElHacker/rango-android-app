@@ -1,24 +1,23 @@
-package com.sutil.rango;
+package com.sutil.rango.adapters;
 
 import java.util.List;
 
 import org.holoeverywhere.widget.Button;
-import org.holoeverywhere.widget.Spinner;
-
-import com.facebook.widget.ProfilePictureView;
-import com.sutil.rango.R;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.ViewManager;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.facebook.widget.ProfilePictureView;
+import com.sutil.rango.R;
+import com.sutil.rango.lib.BaseListElement;
+import com.sutil.rango.lib.RestClient;
 
 /*
  * Used to adapt the a list's view

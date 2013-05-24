@@ -1,4 +1,4 @@
-package com.sutil.rango;
+package com.sutil.rango.fragments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import org.holoeverywhere.widget.ListView;
 import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.Toast;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -20,14 +19,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.ProfilePictureView;
-import com.google.android.gcm.GCMRegistrar;
+import com.sutil.rango.R;
+import com.sutil.rango.WalkieTalkieActivity;
+import com.sutil.rango.adapters.ActionListAdapter;
+import com.sutil.rango.lib.BaseListElement;
+import com.sutil.rango.lib.RestClient;
 
 public class FriendsListFragment extends ListFragment {
 	TextView showMessage;
@@ -173,7 +175,7 @@ public class FriendsListFragment extends ListFragment {
 	    }
 
 	    @Override
-	    protected View.OnClickListener getOnClickListener() {
+		public View.OnClickListener getOnClickListener() {
 	        return new View.OnClickListener() {
 	            @Override
 	            public void onClick(View view) {
