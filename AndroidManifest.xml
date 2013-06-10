@@ -8,20 +8,25 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
     
-    <permission android:name="com.sutil.rango.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 	<uses-permission android:name="com.sutil.rango.permission.C2D_MESSAGE" /> 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <!-- App receives GCM messages. -->
-	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-	<!-- GCM connects to Google Services. -->
-	<uses-permission android:name="android.permission.INTERNET" /> 
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<!-- GCM requires a Google account. -->
+    
+    <!-- GCM requires a Google account. -->
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<!-- Keeps the processor from sleeping when a message is received. -->
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- App receives GCM messages. -->
+	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+	
+	<permission android:name="com.sutil.rango.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+	<uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
+	
+	<!-- GCM connects to Google Services. -->
+	<uses-permission android:name="android.permission.INTERNET" /> 
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
     <uses-feature android:name="android.hardware.wifi" android:required="true" />
     <uses-feature android:name="android.hardware.microphone" android:required="true" />
@@ -59,13 +64,19 @@
                 android:value="com.sutil.rango.TabsActivity"/>
         </activity>
         
+        <activity 
+            android:name="com.sutil.rango.IncomingCallActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
         <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
         <activity android:name="com.facebook.LoginActivity"></activity>
         
-        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+        <receiver 
+            android:name="com.sutil.rango.receivers.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
 		  <intent-filter>
 		    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-		    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 		    <category android:name="com.sutil.rango" />
 		  </intent-filter>
 		</receiver>

@@ -1,11 +1,17 @@
 package com.sutil.rango;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.preference.SharedPreferences;
 import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -28,6 +34,7 @@ import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.android.gcm.GCMRegistrar;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.sutil.rango.adapters.TabsAdapter;
 import com.sutil.rango.fragments.CallsListFragment;
 import com.sutil.rango.fragments.FriendsListFragment;
@@ -35,7 +42,18 @@ import com.sutil.rango.fragments.UserProfileFragment;
 import com.sutil.rango.lib.RestClient;
 
 public class TabsActivity extends Activity {
-	// GCM service sender id
+	public static final String PROPERTY_REG_ID = "registration_id";
+	public static final String PROPERTY_APP_VERSION = "appVersion";
+	private static final String PROPERTY_ON_SERVER_EXPIRATION_TIME = "onServerExpirationTimeMs";
+	
+	/**
+	 * Default lifespan (7 days) of a reservation until it is considered expired. 
+	 */
+	public static final long REGISTRATION_EXPIRY_TIME_MS = 1000 * 3600 * 24 * 7;
+	
+	/** 
+	 * GCM service sender id
+	 */
 	private static final String SENDER_ID = "108747417910";
 	public static final String TAG = "TabsActivity";
 	
@@ -44,6 +62,13 @@ public class TabsActivity extends Activity {
 	TextView tabCenter;
 	TextView tabText;
 	String my_fb_id;
+	
+	GoogleCloudMessaging gcm;
+	SharedPreferences prefs;
+	AtomicInteger msgId = new AtomicInteger();
+	Context context;
+	
+	String regId;
 	
 	private UiLifecycleHelper uiHelper;
 	private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -62,8 +87,16 @@ public class TabsActivity extends Activity {
 	    // Get current user's facebook id
 	    SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 		my_fb_id = settings.getString("my_fb_id", "");
-		// Register the device with the GCM service
-		new RegisterGCMAsyncTask().execute(this);
+		
+		context = getApplicationContext();
+		regId = getRegistrationId(context);
+		
+		if (regId.length() == 0) {
+			// Register the device with the GCM service
+			registerBackground();
+		}
+		
+		gcm  = GoogleCloudMessaging.getInstance(this);
 	    
 	    // The UiLifecycleHelper class constructor takes in a Session.StatusCallback listener
 	    // implementation that you can use to respond to session state changes
@@ -226,30 +259,131 @@ public class TabsActivity extends Activity {
 	    }
 	}
 	
+	/**
+	 * Gets the current registration id for application on GCM service.
+	 * <p>
+	 * If result is empty, the registration has failed.
+	 *
+	 * @return registration id, or empty string if the registration is not
+	 *         complete.
+	 */
+	private String getRegistrationId(Context context) {
+	    final SharedPreferences prefs = getGCMPreferences(context);
+	    String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+	    if (registrationId.length() == 0) {
+	        Log.v(TAG, "Registration not found.");
+	        return "";
+	    }
+	    // check if app was updated; if so, it must clear registration id to
+	    // avoid a race condition if GCM sends a message
+	    int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+	    int currentVersion = getAppVersion(context);
+	    if (registeredVersion != currentVersion || isRegistrationExpired()) {
+	        Log.v(TAG, "App version changed or registration expired.");
+	        return "";
+	    }
+	    return registrationId;
+	}
+	
+	/**
+	 * @return Application's {@code SharedPreferences}.
+	 */
+	private SharedPreferences getGCMPreferences(Context context) {
+		return getSharedPreferences(TabsActivity.class.getSimpleName(), 
+    		Context.MODE_PRIVATE);
+	}
+	
+	/**
+	 * @return Application's version code from the {@code PackageManager}.
+	 */
+	private static int getAppVersion(Context context) {
+	    try {
+	        PackageInfo packageInfo = context.getPackageManager()
+	                .getPackageInfo(context.getPackageName(), 0);
+	        return packageInfo.versionCode;
+	    } catch (NameNotFoundException e) {
+	        // should never happen
+	        throw new RuntimeException("Could not get package name: " + e);
+	    }
+	}
+	
+	/**
+	 * Checks if the registration has expired.
+	 *
+	 * <p>To avoid the scenario where the device sends the registration to the
+	 * server but the server loses it, the app developer may choose to re-register
+	 * after REGISTRATION_EXPIRY_TIME_MS.
+	 *
+	 * @return true if the registration has expired.
+	 */
+	private boolean isRegistrationExpired() {
+	    final SharedPreferences prefs = getGCMPreferences(context);
+	    // checks if the information is not stale
+	    long expirationTime =
+	            prefs.getLong(PROPERTY_ON_SERVER_EXPIRATION_TIME, -1);
+	    return System.currentTimeMillis() > expirationTime;
+	}
+	
+	/**
+	 * Registers the application with GCM servers asynchronously.
+	 * <p>
+	 * Stores the registration id, app versionCode, and expiration time in the 
+	 * application's shared preferences.
+	 */
+	private void registerBackground() {
+		new RegisterGCMAsyncTask().execute(this);
+	}
+	
+	/**
+	 * Stores the registration id, app versionCode, and expiration time in the
+	 * application's {@code SharedPreferences}.
+	 *
+	 * @param context application's context.
+	 * @param regId registration id
+	 */
+	private void setRegistrationId(Context context, String regId) {
+	    final SharedPreferences prefs = getGCMPreferences(context);
+	    int appVersion = getAppVersion(context);
+	    Log.v(TAG, "Saving regId on app version " + appVersion);
+	    SharedPreferences.Editor editor = prefs.edit();
+	    editor.putString(PROPERTY_REG_ID, regId);
+	    editor.putInt(PROPERTY_APP_VERSION, appVersion);
+	    long expirationTime = System.currentTimeMillis() + REGISTRATION_EXPIRY_TIME_MS;
+
+	    Log.v(TAG, "Setting registration expiry time to " +
+	            new Timestamp(expirationTime));
+	    editor.putLong(PROPERTY_ON_SERVER_EXPIRATION_TIME, expirationTime);
+	    editor.commit();
+	}
+	
     // Internal class that executes an async task
     // registers the device with the Google cloud messaging service
-    private class RegisterGCMAsyncTask extends AsyncTask<Context, Void, Boolean> {
+    private class RegisterGCMAsyncTask extends AsyncTask<Context, Void, String> {
     	
 		@Override
-		protected Boolean doInBackground(Context... contexts) {
+		protected String doInBackground(Context... contexts) {
 			Context context = contexts[0];
-			// Register the device with the GCM service
-	 		GCMRegistrar.checkDevice(context);
-	 		GCMRegistrar.checkManifest(context);
-	 		final String gcm_reg_id = GCMRegistrar.getRegistrationId(context);
-	 		if (gcm_reg_id.equals("")) {
-	 			Log.v(TAG, "REGISTERING");
-	 			GCMRegistrar.register(context, SENDER_ID);
-	 		} else {
-	 			Log.v(TAG, "Already registered");
-	 			Log.v(TAG, gcm_reg_id);
-	 			// Set the id for posting the reg id
-            	RestClient.post_user_gcm_id(my_fb_id, gcm_reg_id);
-	 		}
-	 		return true;
+			String msg = "";
+			try {
+				if (gcm == null) {
+					gcm = GoogleCloudMessaging.getInstance(context);
+				}
+				regId = gcm.register(SENDER_ID);
+				msg = "Device registered, registration id=" + regId;
+				// Save the registration id to server
+				// and to device - no need to register again
+				RestClient.post_user_gcm_id(my_fb_id, regId);
+				setRegistrationId(context, regId);
+			} catch (IOException ex) {
+				msg = "Error: " + ex.getMessage();
+			}
+			return msg;
+			
 		}
 		
-		protected void onPostExecute(Boolean registered) {}
+		protected void onPostExecute(String msg) {
+			Log.d(TAG, msg);
+		}
     }
 	
 }

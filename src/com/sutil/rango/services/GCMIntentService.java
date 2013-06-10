@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facebook.Session;
+import com.sutil.rango.IncomingCallActivity;
 import com.sutil.rango.MainActivity;
 import com.sutil.rango.R;
 import com.sutil.rango.RequestsListActivity;
@@ -92,38 +93,38 @@ public class GCMIntentService extends com.google.android.gcm.GCMBaseIntentServic
 		JSONObject source_user = RestClient.get_user(source_fb_id);
 		Log.d(TAG, source_user.toString());
 		String message = bundle.getString("message");
-		Intent notificationIntent;
+		// The action of the message defines what the app ought to do with such message
+		// The values are:
+		// call: Incoming call
+		// invite: New friend invite
 		String action = bundle.getString("action");
 		try {
 			if(action.equals("call")) {
-				notificationIntent = new Intent(context, WalkieTalkieActivity.class);
-				Bundle notificationBundle = new Bundle();
-				SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
-	 			String my_fb_id = settings.getString("my_fb_id", "");
-				notificationBundle.putString("my_id", my_fb_id);	// Set the my_fb_id
-				notificationBundle.putString("target_id", source_user.getString("fb_id"));	// Set the target_id from source
-				String source_full_name = source_user.getString("first_name") + " " + source_user.getString("last_name"); 
-				notificationBundle.putString("target_name", source_full_name);
-				// TODO: get description from server
-				notificationBundle.putString("target_desc", "Mi amigo");//source_user.getString("description"));
-				notificationIntent.putExtras(notificationBundle);
+//				notificationIntent = new Intent(context, WalkieTalkieActivity.class);
+//				Bundle notificationBundle = new Bundle();
+//				SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+//	 			String my_fb_id = settings.getString("my_fb_id", "");
+//				notificationBundle.putString("my_id", my_fb_id);	// Set the my_fb_id
+//				notificationBundle.putString("target_id", source_user.getString("fb_id"));	// Set the target_id from source
+//				String source_full_name = source_user.getString("first_name") + " " + source_user.getString("last_name"); 
+//				notificationBundle.putString("target_name", source_full_name);
+//				notificationIntent.putExtras(notificationBundle);
+				
+				Intent incominCallIntent = new Intent(context, IncomingCallActivity.class);
+				startActivity(incominCallIntent);
+				
 			} else if (action.equals("invite")) {
-				notificationIntent = new Intent(context, RequestsListActivity.class);
-			} else {
-				notificationIntent = new Intent(context, MainActivity.class);
+				Intent notificationIntent = new Intent(context, RequestsListActivity.class);
+				int icon = R.drawable.notification;
+				String title = bundle.getString("title");
+				String ticker_text = "Notification from rango";
+				NotificationSetter notification_setter = new NotificationSetter(context);
+				notification_setter.setNotification(notificationIntent, title, ticker_text, message, icon);
 			}
-			
-		} catch (JSONException e) {
-			// default intent
-			notificationIntent = intent;
+		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
-		int icon = R.drawable.notification;
-		String title = bundle.getString("title");
-		String ticker_text = "Notification from rango";
-		NotificationSetter notification_setter = new NotificationSetter(context);
-		notification_setter.setNotification(notificationIntent, title, ticker_text, message, icon);
 	}
 	
 }
