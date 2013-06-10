@@ -34,4 +34,9 @@
 	
 	<!-- WalkieTalkie -->
 	<string name="callEnded">Llamada terminada</string>
+	
+	<!-- Incoming Call -->
+	<string name="incomingCall">Llamada entrante</string>
+	<string name="answer">Contestar</string>
+	<string name="reject">Rechazar</string>
 </resources>
