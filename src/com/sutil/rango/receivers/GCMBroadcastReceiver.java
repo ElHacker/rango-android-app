@@ -8,6 +8,7 @@ import com.sutil.rango.IncomingCallActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 public class GCMBroadcastReceiver extends BroadcastReceiver {
@@ -20,15 +21,17 @@ public class GCMBroadcastReceiver extends BroadcastReceiver {
 		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
 		ctx = context;
 		String messageType = gcm.getMessageType(intent);
-		String intentExtras = intent.getExtras().toString();
+		String intentExtrasMsg = intent.getExtras().toString();
 		if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-			Log.d(TAG, "Send error: " + intentExtras);
+			Log.d(TAG, "Send error: " + intentExtrasMsg);
 		} else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
-			Log.d(TAG, "Deleted messages on server: " + intentExtras);
+			Log.d(TAG, "Deleted messages on server: " + intentExtrasMsg);
 		} else {
-			Log.d(TAG, "Message Received: " + intentExtras);
+			Log.d(TAG, "Message Received: " + intentExtrasMsg);
+			Bundle intentExtras = intent.getExtras();
 			Intent incominCallIntent = new Intent(context, IncomingCallActivity.class);
 			incominCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			incominCallIntent.putExtras(intentExtras);
 			ctx.startActivity(incominCallIntent);
 		}
 		setResultCode(Activity.RESULT_OK);

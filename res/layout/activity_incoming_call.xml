@@ -18,7 +18,7 @@
         android:textSize="24sp"/>
     
     <com.facebook.widget.ProfilePictureView
-		android:id="@+id/selection_profile_pic"
+		android:id="@+id/contact_profile_pic"
 		android:layout_height="130dp"
 		android:layout_width="130dp"
 		android:layout_gravity="center_horizontal"
@@ -32,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:gravity="center_horizontal"
-        android:text="Kalypso Paredes"
         android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="26sp"/>
