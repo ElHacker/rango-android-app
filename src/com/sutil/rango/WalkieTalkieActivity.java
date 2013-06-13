@@ -142,8 +142,10 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         	audioPlayAndDown = null;
     	}
     	try {
-			socket.close();
-			socket = null;
+    		if(socket != null) {
+				socket.close();
+				socket = null;
+    		}
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();

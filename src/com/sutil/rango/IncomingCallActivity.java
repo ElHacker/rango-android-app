@@ -79,11 +79,11 @@ public class IncomingCallActivity extends Activity {
 	    ProfilePictureView contactPicture = (ProfilePictureView) findViewById(R.id.contact_profile_pic);
 	    TextView contactName = (TextView) findViewById(R.id.contact_name);
 	    
-	    contactPicture.setProfileId(friendFbId);
 	    try {
+	    	contactPicture.setProfileId(friendFbId);
 			contactName.setText(
 					friend.getString("first_name") + " " + friend.getString("last_name"));
-		} catch (JSONException ex) {
+		} catch (Exception ex) {
 			Log.e(TAG, ex.getMessage());
 			ex.printStackTrace();
 		}
@@ -93,10 +93,16 @@ public class IncomingCallActivity extends Activity {
         rejectCall.setOnTouchListener(new View.OnTouchListener() {
         	@Override
             public boolean onTouch(View v, MotionEvent event) {
-                mMediaPlayer.stop();
-                mMediaPlayer.release();
-                finish();
-                return false;
+        		try {
+	                if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+		        		mMediaPlayer.stop();
+		                mMediaPlayer.release();
+	                }
+        		} catch (Exception e) {
+        			Log.e(TAG, e.getMessage());
+        		}
+        		finish();
+        		return false;
             }
         });
         
@@ -105,10 +111,12 @@ public class IncomingCallActivity extends Activity {
         answerCall.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				mMediaPlayer.stop();
-				mMediaPlayer.release();
 				
 				try {
+	                if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+		        		mMediaPlayer.stop();
+		                mMediaPlayer.release();
+	                }
 				    // Get current user's fb id
 				    SharedPreferences prefs = getSharedPreferences("MyUserInfo", 0);
 				    String currentUserFbId = prefs.getString("my_fb_id", "");
@@ -125,7 +133,10 @@ public class IncomingCallActivity extends Activity {
 				} catch (JSONException ex) {
 					Log.e(TAG, ex.getMessage());
 					ex.printStackTrace();
-				} 
+				} catch (Exception ex) {
+					Log.e(TAG, ex.getMessage());
+					ex.printStackTrace();
+				}
 				
 				return false;
 			}
