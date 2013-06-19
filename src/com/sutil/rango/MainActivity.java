@@ -51,10 +51,9 @@ public class MainActivity extends FragmentActivity {
 		
 		uiHelper = new UiLifecycleHelper(this, callback);
 	    uiHelper.onCreate(savedInstanceState);
-		
+	    
 		setContentView(R.layout.activity_main);
 		
-
 	    FragmentManager fm = getSupportFragmentManager();
 	    fragments[SPLASH] = fm.findFragmentById(R.id.splashFragment);
 
@@ -125,16 +124,20 @@ public class MainActivity extends FragmentActivity {
 	protected void onResumeFragments() {
 	    super.onResumeFragments();
 	    Session session = Session.getActiveSession();
-
+	    SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+	    
 	    if (session != null && session.isOpened()) {
 	        // if the session is already open,
 	        // try to start the TabsScreen activity
-	    	Log.d(TAG, "SESSION OPENED");
 	    	onLogin();
+	    	boolean loggedIn = settings.getBoolean("logged_in", false);
+	    	if (loggedIn) {
+	    		// Start the tab screen activity
+                startActivity(tabsScreen);
+	    	}
 	    } else {
 	        // otherwise present the splash screen
 	        // and ask the user to login.
-	    	Log.d(TAG, "SESSION NOT OPENED");
 	        showFragment(SPLASH, false);
 	        changeUIWhenLogout();
 	    }
@@ -169,7 +172,6 @@ public class MainActivity extends FragmentActivity {
 	        if (state.isOpened()) {
 	            // If the session state is open:
 	            // Show the authenticated fragment
-	        	Log.d(TAG, "SSC SESION OPENED");
 	        	onLogin();
 	        	// Logged in
 	        	// Get my user information from facebook
@@ -177,7 +179,6 @@ public class MainActivity extends FragmentActivity {
 	        } else if (state.isClosed()) {
 	            // If the session state is closed:
 	            // Show the login fragment
-	        	Log.d(TAG, "SSC SESION NOT OPENED");
 	        	changeUIWhenLogout();
 	            showFragment(SPLASH, false);
 	        }
@@ -212,10 +213,10 @@ public class MainActivity extends FragmentActivity {
 	            // If the response is successful
 	            if (session == Session.getActiveSession()) {
 	                if (user != null) {
-	                	Log.d(TAG, "Saving Shared preferences");
 	                	// Save my fb user information in shared preferences
 	                	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
 	                	SharedPreferences.Editor editor = settings.edit();
+	                	editor.putBoolean("logged_in", true);	// indicated that the user is already logged in
 	                	editor.putString("my_fb_id", user.getId());
 	                	editor.putString("my_fb_first_name", user.getFirstName());
 	                	editor.putString("my_fb_last_name", user.getLastName());

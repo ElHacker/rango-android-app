@@ -8,6 +8,7 @@ import org.holoeverywhere.widget.TextView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -105,6 +106,11 @@ public class UserProfileFragment extends Fragment {
 	private void onSessionStateChange(final Session session, SessionState state, Exception exception) {
 	    if (session != null && session.isOpened()) {
 	        setProfileInfo();
+	    } else {
+	    	// Logged out
+	    	SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
+	    	SharedPreferences.Editor editor = settings.edit();
+	    	editor.putBoolean("logged_in", false);
 	    }
 	}
 	

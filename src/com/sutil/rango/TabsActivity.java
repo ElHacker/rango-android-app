@@ -144,6 +144,17 @@ public class TabsActivity extends Activity {
 		return false;
 	}
 	
+	@Override
+	public void onBackPressed() {
+		// Send user to the device home screen
+		// TODO: this is not the best method to exit the app
+		// because it does not end the app. It just sends it to the background
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+	}
+	
 	/*
 	 * Facebook friend request dialog
 	 * */
