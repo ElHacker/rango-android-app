@@ -164,51 +164,52 @@ public class TabsActivity extends Activity {
 	    final Context context = (Context) this;
 
 	    WebDialog requestsDialog = (
-	        new WebDialog.RequestsDialogBuilder(context,
+	        new WebDialog.Builder(context,
 	            Session.getActiveSession(),
+	            "apprequests",
 	            params))
-	            .setOnCompleteListener(new OnCompleteListener() {
+	            .setOnCompleteListener(
+	            	new OnCompleteListener() {
 
-	                @Override
-	                public void onComplete(Bundle values,
-	                    FacebookException error) {
-	                    if (error != null) {
-	                        if (error instanceof FacebookOperationCanceledException) {
-	                            Toast.makeText(context, 
-	                                "Request cancelled", 
-	                                Toast.LENGTH_SHORT).show();
-	                        } else {
-	                            Toast.makeText(context, 
-	                                "Network Error", 
-	                                Toast.LENGTH_SHORT).show();
-	                        }
-	                    } else {
-	                        final String requestId = values.getString("request");
-	                        if (requestId != null) {
-	                        	// Get invited friends ids 
-	                        	// and make a friend request on rango server too
-	                        	int invited_friends_ids_size = values.keySet().size() - 1;
-	                        	for (int i = 0; i < invited_friends_ids_size; i++) {
-	                        		String friend_id = values.getString("to[" + i + "]");
-	                        		// Rango invite friend
-	                        		RestClient.post_friend_request(my_fb_id, friend_id);
-	                        	}
-	                            Toast.makeText(context, 
-	                                "Request sent",  
-	                                Toast.LENGTH_SHORT).show();
-	                            // Track the 'facebook_invite' event on analytics
-	                            Tracker myTracker = EasyTracker.getTracker();
-	                            myTracker.sendEvent("growth_action", "invite_friends", "facebook_invite", Long.valueOf(invited_friends_ids_size) );
-	                        } else {
-	                            Toast.makeText(context, 
-	                                "Request cancelled", 
-	                                Toast.LENGTH_SHORT).show();
-	                        }
-	                    }   
-	                }
-
-	            })
-	            .build();
+		                @Override
+		                public void onComplete(Bundle values,
+		                    FacebookException error) {
+		                    if (error != null) {
+		                        if (error instanceof FacebookOperationCanceledException) {
+		                            Toast.makeText(context, 
+		                                "Request cancelled", 
+		                                Toast.LENGTH_SHORT).show();
+		                        } else {
+		                            Toast.makeText(context, 
+		                                "Network Error", 
+		                                Toast.LENGTH_SHORT).show();
+		                        }
+		                    } else {
+		                        final String requestId = values.getString("request");
+		                        if (requestId != null) {
+		                        	// Get invited friends ids 
+		                        	// and make a friend request on rango server too
+		                        	int invited_friends_ids_size = values.keySet().size() - 1;
+		                        	for (int i = 0; i < invited_friends_ids_size; i++) {
+		                        		String friend_id = values.getString("to[" + i + "]");
+		                        		// Rango invite friend
+		                        		RestClient.post_friend_request(my_fb_id, friend_id);
+		                        	}
+		                            Toast.makeText(context, 
+		                                "Request sent",  
+		                                Toast.LENGTH_SHORT).show();
+		                            // Track the 'facebook_invite' event on analytics
+		                            Tracker myTracker = EasyTracker.getTracker();
+		                            myTracker.sendEvent("growth_action", "invite_friends", "facebook_invite", Long.valueOf(invited_friends_ids_size) );
+		                        } else {
+		                            Toast.makeText(context, 
+		                                "Request cancelled", 
+		                                Toast.LENGTH_SHORT).show();
+		                        }
+		                    }   
+		                }
+	            	}
+	            ).build();
 	    requestsDialog.show();
 	}
 	
