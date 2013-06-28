@@ -1,4 +1,4 @@
-package com.sutil.rango.lib;
+package com.sutil.rango.libs;
  
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +26,12 @@ import org.json.JSONObject;
 
 import android.util.Log;
  
+/**
+ * Does not work for android SDK API level 11 and higher
+ * 
+ * @deprecated use {@link com.sutil.rango.libs.restapi.RestfulClient} instead.
+ */
+@Deprecated
 public class RestClient {
 	
 	private static final String TAG = "RestClient";
@@ -281,7 +287,7 @@ public class RestClient {
     }
     
     /*
-     * Delete friends 
+     * Delete friends
      */
     public static void delete_user_friend(String user_id, String friend_id) {
     	String url = rango_api_host + String.format(rango_api_paths.get("delete_user_friends"), user_id, friend_id);

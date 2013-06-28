@@ -24,8 +24,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.adapters.ActionListAdapter;
-import com.sutil.rango.lib.BaseListElement;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.BaseListElement;
+import com.sutil.rango.libs.RestClient;
 
 public class RequestsListActivity extends ListActivity {
 	TextView showMessage;

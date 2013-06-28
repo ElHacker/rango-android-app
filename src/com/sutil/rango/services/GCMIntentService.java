@@ -10,8 +10,8 @@ import com.sutil.rango.R;
 import com.sutil.rango.RequestsListActivity;
 import com.sutil.rango.WalkieTalkieActivity;
 import com.sutil.rango.R.drawable;
-import com.sutil.rango.lib.NotificationSetter;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.NotificationSetter;
+import com.sutil.rango.libs.RestClient;
 
 import android.app.Notification;
 import android.app.NotificationManager;

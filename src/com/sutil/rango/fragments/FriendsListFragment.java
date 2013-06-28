@@ -28,8 +28,10 @@ import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.R;
 import com.sutil.rango.WalkieTalkieActivity;
 import com.sutil.rango.adapters.ActionListAdapter;
-import com.sutil.rango.lib.BaseListElement;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.BaseListElement;
+import com.sutil.rango.libs.RestClient;
+import com.sutil.rango.libs.restapi.GetResponseCallback;
+import com.sutil.rango.libs.restapi.RestfulClient;
 
 public class FriendsListFragment extends ListFragment {
 	TextView showMessage;
@@ -83,8 +85,8 @@ public class FriendsListFragment extends ListFragment {
 		
 		// Get my friends list
 		SharedPreferences settings = getSharedPreferences("MyUserInfo", 0);
-		String my_fb_id = settings.getString("my_fb_id", "");
-		new FriendListRequestAsyncTask().execute(my_fb_id);
+		String currentFbId = settings.getString("my_fb_id", "");
+		loadFriendList(currentFbId);
 		
 	    return  view;
 	}
@@ -118,51 +120,47 @@ public class FriendsListFragment extends ListFragment {
 		}
 	}
 	
-	// Internal class that executes an async task
-    // registers the device with the Google cloud messaging service
-    private class FriendListRequestAsyncTask extends AsyncTask<String, Void, Boolean> {
-    	
-    	@Override
-    	protected void onPreExecute() {
-    		loadingProgress.setVisibility(View.VISIBLE);
-    	}
-    	
-		@Override
-		protected Boolean doInBackground(String... strings) {
-			String user_id = strings[0];
-			try {
-				JSONArray json_friends = RestClient.get_user_friends(user_id);
-				for(int i = 0; i < json_friends.length(); i++) {
-					JSONObject friend = json_friends.getJSONObject(i);
-					ProfilePictureView profilePic = new ProfilePictureView(context);
-					profilePic.setCropped(true);
-					profilePic.setProfileId(friend.getString("fb_id"));
-					String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
-					// Create a list element with profile picture, name and description
-					PeopleListElement peopleListElement = new PeopleListElement(
-							profilePic, friend_full_name, "");
-					listElements.add(peopleListElement);
+	// Calls the restful client to load the current user's friend list
+	private void loadFriendList(String userId) {
+			
+			RestfulClient.getUserFriends(userId, new GetResponseCallback<JSONArray>() {
+				@Override
+				public void onPreGet() {
+					loadingProgress.setVisibility(View.VISIBLE);						
 				}
-				return true;
-			} catch (Exception e) {
-				Log.e(TAG, "Exception: " + e.getMessage());
-				e.printStackTrace();
-				return false;
-			}
+				
+				@Override
+				public void onDataReceived(JSONArray friends) {
+					try {
+						for(int i = 0; i < friends.length(); i++) {
+							JSONObject friend = friends.getJSONObject(i);
+							ProfilePictureView profilePic = new ProfilePictureView(context);
+							profilePic.setCropped(true);
+							profilePic.setProfileId(friend.getString("fb_id"));
+							String friend_full_name = friend.getString("first_name") + " " + friend.getString("last_name");
+							// Create a list element with profile picture, name and description
+							PeopleListElement peopleListElement = new PeopleListElement(
+									profilePic, friend_full_name, "");
+							listElements.add(peopleListElement);
+						}
+						
+						loadingProgress.setVisibility(View.GONE);
+						// Set the list view adapter
+						listView.setAdapter(new ActionListAdapter(getActivity(),
+									android.R.id.list, listElements, R.layout.friends_list_item));
+						
+					} catch (Exception e) {
+						Log.e(TAG, "Exception: " + e.getMessage());
+						e.printStackTrace();
+						// Network error
+						networkErrorToast.show();
+					}
+				}
+	
+			});
 		}
 		
-		protected void onPostExecute(Boolean hasLoaded) {
-			if (hasLoaded) {
-				loadingProgress.setVisibility(View.GONE);
-				// Set the list view adapter
-				listView.setAdapter(new ActionListAdapter(getActivity(),
-							android.R.id.list, listElements, R.layout.friends_list_item));
-			} else {
-				// Network error
-				networkErrorToast.show();
-			}
-		}
-    }
+
 	
 	// Represents an element of the friends list, supports profile picture
 	// name, and a brief description

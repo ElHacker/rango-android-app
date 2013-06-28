@@ -39,7 +39,7 @@ import com.sutil.rango.adapters.TabsAdapter;
 import com.sutil.rango.fragments.CallsListFragment;
 import com.sutil.rango.fragments.FriendsListFragment;
 import com.sutil.rango.fragments.UserProfileFragment;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.RestClient;
 
 public class TabsActivity extends Activity {
 	public static final String PROPERTY_REG_ID = "registration_id";

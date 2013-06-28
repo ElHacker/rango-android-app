@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.facebook.widget.ProfilePictureView;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.RestClient;
 
 /**
  * @author syred

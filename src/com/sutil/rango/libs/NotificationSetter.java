@@ -1,4 +1,4 @@
-package com.sutil.rango.lib;
+package com.sutil.rango.libs;
 
 import android.app.Notification;
 import android.app.NotificationManager;

@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.R;
-import com.sutil.rango.lib.BaseListElement;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.BaseListElement;
+import com.sutil.rango.libs.RestClient;
 
 /*
  * Used to adapt the a list's view

@@ -6,7 +6,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.sutil.rango.IncomingCallActivity;
 import com.sutil.rango.R;
 import com.sutil.rango.RequestsListActivity;
-import com.sutil.rango.lib.NotificationSetter;
+import com.sutil.rango.libs.NotificationSetter;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

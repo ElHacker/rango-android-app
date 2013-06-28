@@ -22,7 +22,7 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
-import com.sutil.rango.lib.RestClient;
+import com.sutil.rango.libs.RestClient;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -221,7 +221,7 @@ public class MainActivity extends FragmentActivity {
 	                	editor.putString("my_fb_first_name", user.getFirstName());
 	                	editor.putString("my_fb_last_name", user.getLastName());
 	                	editor.commit();
-	                	// post a new user in rango if non existent
+	                	// post a new user in rango
 	                	RestClient.post_user(user.getId(), (String) user.asMap().get("email"), user.getFirstName(), user.getLastName());
 	                	// Start the tab screen activity
 	                    startActivity(tabsScreen);

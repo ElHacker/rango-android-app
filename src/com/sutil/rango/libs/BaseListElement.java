@@ -1,4 +1,4 @@
-package com.sutil.rango.lib;
+package com.sutil.rango.libs;
 
 import com.facebook.widget.ProfilePictureView;
 

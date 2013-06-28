@@ -24,8 +24,8 @@ import com.facebook.widget.ProfilePictureView;
 import com.sutil.rango.R;
 import com.sutil.rango.WalkieTalkieActivity;
 import com.sutil.rango.adapters.ActionListAdapter;
-import com.sutil.rango.lib.BaseListElement;
-import com.sutil.rango.lib.DatabaseHandler;
+import com.sutil.rango.libs.BaseListElement;
+import com.sutil.rango.libs.DatabaseHandler;
 import com.sutil.rango.models.Call;
 
 public class CallsListFragment extends ListFragment {
